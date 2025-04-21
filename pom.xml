@@ -44,6 +44,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
             </plugin>
+
         </plugins>
     </build>
     <repositories>
@@ -51,6 +52,12 @@
             <id>itext</id>
             <url>https://repo.itextsupport.com/releases/</url>
         </repository>
+
+            <repository>
+                <id>oss.sonatype.org</id>
+                <url>https://oss.sonatype.org/content/repositories/releases/</url>
+            </repository>
+
     </repositories>
 
 </project>
