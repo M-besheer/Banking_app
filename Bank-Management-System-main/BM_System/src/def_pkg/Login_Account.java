@@ -1,0 +1,208 @@
+package def_pkg;
+
+import java.sql.*;
+
+public class Login_Account {
+	private String login_id;
+	private String username;
+	private String password;
+	private String type;
+
+	public Login_Account() {
+		this.login_id = "";
+		this.username = "";
+		this.password = "";
+		this.type = "";
+	}
+
+	public Login_Account(String login_id, String username, String password, String type) {
+		this.login_id = login_id;
+		this.username = username;
+		this.password = password;
+		this.type = type;
+	}
+	private Connection establishConnection() {
+		String url = "jdbc:mysql://localhost:3306/bank_schema";
+		String username = "root";
+		String password = "";
+		try {
+			Connection connection = DriverManager.getConnection(url, username, password);
+			System.out.println("Connection established successfully!");
+			return connection;
+		} catch (SQLException e) {
+			throw new IllegalStateException("Unable to connect to the database. " + e.getMessage());
+		}
+	}
+	// Getters
+	public String getLoginId() { return login_id; }
+	public String getUsername() { return username; }
+	public String getType() {
+		switch(type.toUpperCase()) {
+			case "C": return "Client";
+			case "M": return "Manager";
+			case "A": return "Accountant";
+			default: return "Unknown";
+		}
+	}
+
+	// Authentication methods
+	public static Login_Account signIn(Connection conn, String username, String password) throws SQLException {
+		String sql = "SELECT login_id, type FROM login_account WHERE username = ? AND password = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, username);
+			pstmt.setString(2, password);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return new Login_Account(
+							rs.getString("login_id"),
+							username,
+							"", // Empty password for security
+							rs.getString("type")
+					);
+				}
+			}
+		}
+		return null;
+	}
+
+
+
+//	public static Login_Account signIn1(Connection conn, String login_id, String password) throws SQLException {
+//		String sql = "SELECT username, type FROM login_account WHERE login_id = ? AND password = ?";
+//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//			pstmt.setString(1, login_id);
+//			pstmt.setString(2, password);
+//			try (ResultSet rs = pstmt.executeQuery()) {
+//				if (rs.next()) {
+//					return new Login_Account(
+//							rs.getString("login_id"),
+//							login_id,
+//							"", // Empty password for security
+//							rs.getString("type")
+//					);
+//				}
+//			}
+//		}
+//		return null;
+//	}
+
+
+
+
+
+	public static boolean verifyAccount(Connection conn, String accNum, String cnic) throws SQLException {
+		String sql = "SELECT c.CNIC FROM client c " +
+				"JOIN bank_account ba ON c.client_id = ba.client_id " +
+				"WHERE ba.acc_num = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, accNum);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				return rs.next() && rs.getString("CNIC").equals(cnic);
+			}
+		}
+	}
+
+	public static int signUp(Connection conn, String username, String pass1, String pass2, String accNum) throws SQLException {
+		if (!pass1.equals(pass2)) return -1;
+//		if (!checkPasswordStrength(pass1)) return -4;
+
+		try {
+			conn.setAutoCommit(false);
+
+
+			// Create login entry
+			String sqlselect = "SELECT login_id FROM bank_account WHERE acc_num = ?";
+			try (PreparedStatement pstmt = conn.prepareStatement(sqlselect)) {
+				pstmt.setString(1, accNum);
+				try (ResultSet rs = pstmt.executeQuery()) {
+					if (rs.next()) {
+						// After reading a value, for instance, after calling rs.getInt("login_id"),
+						// you can use rs.wasNull() to check if it was null.
+						int currentLoginId = rs.getInt("login_id");
+						if (rs.wasNull()) {  // Proceed only if login_id was NULL
+							String sql = "INSERT INTO login_account (username, password, type) VALUES (?, ?, 'C')";
+							try (PreparedStatement pstmt2 = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+								pstmt2.setString(1, username);
+								pstmt2.setString(2, pass1);
+								pstmt2.executeUpdate();
+
+								// Corrected: use pstmt2 to get the generated keys
+								try (ResultSet rs2 = pstmt2.getGeneratedKeys()) {
+									if (rs2.next()) {
+										int loginId = rs2.getInt(1);
+										// Link to bank account
+										String updateSql = "UPDATE bank_account SET login_id = ? WHERE acc_num = ?";
+										try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+											updateStmt.setInt(1, loginId);
+											updateStmt.setString(2, accNum);
+											updateStmt.executeUpdate();
+										}
+									}
+								}
+							}
+						}
+						else {
+							// login_id is not null; account is already linked
+							System.out.println("DSDS");
+						}
+					}
+				}
+			}
+			conn.commit();
+			return 0;
+		} catch (SQLException e) {
+			conn.rollback();
+			throw e;
+		} finally {
+			conn.setAutoCommit(true);
+		}
+	}
+
+	// Password management
+//	public static void changePassword(Connection conn, int loginId, String newPassword) throws SQLException {
+//		String sql = "UPDATE login_account SET password = ? WHERE login_id = ?";
+//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//			pstmt.setString(1, newPassword);
+//			pstmt.setInt(2, loginId);
+//			pstmt.executeUpdate();
+//		}
+//	}
+
+//	public static boolean checkPasswordStrength(String password) {
+//		// At least 8 chars, contains digit, uppercase, lowercase, and special char
+//		String pattern = "[0-9]";
+//		return Pattern.compile(pattern).matcher(password).matches();
+//	}
+
+	// User information
+	public static String getEmployeeName(Connection conn, String loginId) throws SQLException {
+		String sql = "SELECT f_name, l_name FROM employee WHERE login_id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, loginId);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getString("f_name") + " " + rs.getString("l_name");
+				}
+			}
+		}
+		return "";
+	}
+
+	public static Login_Account getByUsername(Connection conn, String username) throws SQLException {
+		String sql = "SELECT login_id, type FROM login_account WHERE username = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, username);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return new Login_Account(
+							rs.getString("login_id"),
+							username,
+							"", // Empty password for security
+							rs.getString("type")
+					);
+				}
+			}
+		}
+		return null;
+	}
+}
