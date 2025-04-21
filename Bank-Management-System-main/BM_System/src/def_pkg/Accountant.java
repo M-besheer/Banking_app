@@ -59,6 +59,7 @@ public class Accountant {
 				"JOIN bank_account ba ON c.client_id = ba.client_id " +
 				"WHERE ba.acc_num = ? AND c.CNIC = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			// this is a comment by omar
 			pstmt.setString(1, accountNum);
 			pstmt.setString(2, CNIC);
 			try (ResultSet rs = pstmt.executeQuery()) {
