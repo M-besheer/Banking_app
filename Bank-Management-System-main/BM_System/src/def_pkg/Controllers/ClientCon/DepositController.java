@@ -93,7 +93,7 @@ public class DepositController {
     @FXML
     private void openClientMenu() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../GUI_Pages/Client/ClientDashboard.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/Client/ClientDashboard.fxml"));
             Parent root = loader.load();
 
             ClientMenuController controller = loader.getController();
@@ -108,7 +108,7 @@ public class DepositController {
 
     @FXML private void signOut() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("../../GUI_Pages/LoginSignup/Login.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("../../../GUI_Pages/LoginSignup/Login.fxml"));
             Stage stage = (Stage) signOutButton.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {

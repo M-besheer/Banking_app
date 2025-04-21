@@ -34,7 +34,7 @@ public class Signup1Controller {
     @FXML
     private void handleBack() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../GUI_Pages/LoginSignup/Login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/LoginSignup/Login.fxml"));
             Parent root = loader.load();
 
             Stage stage = (Stage) backButton.getScene().getWindow();
@@ -69,7 +69,7 @@ public class Signup1Controller {
 
     private void openSignupForm2(String accountNumber) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../GUI_Pages/LoginSignup/Signup2.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/LoginSignup/Signup2.fxml"));
             Parent root = loader.load();
 
             Signup2Controller controller = loader.getController();

@@ -130,7 +130,7 @@ public class ClientMenuController {
 
     private void openDepositMoney() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../GUI_Pages/Client/ClientDeposit.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/Client/ClientDeposit.fxml"));
             Parent root = loader.load();
 
             DepositController controller = loader.getController();
@@ -145,7 +145,7 @@ public class ClientMenuController {
 
     private void openAccountInfo() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../GUI_Pages/Client/ClientAccountInfo.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/Client/ClientAccountInfo.fxml"));
             Parent root = loader.load();
 
             AccountInfoController controller = loader.getController();
@@ -161,7 +161,7 @@ public class ClientMenuController {
 
     private void openTransferMoney() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../GUI_Pages/Client/ClientTransferMoney.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/Client/ClientTransferMoney.fxml"));
             Parent root = loader.load();
 
             TransferMoneyController controller = loader.getController();
@@ -177,7 +177,7 @@ public class ClientMenuController {
 
     private void WithdrawMoney() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../GUI_Pages/Client/ClientWithdraw.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/Client/ClientWithdraw.fxml"));
             Parent root = loader.load();
 
             WithdrawController controller = loader.getController();
@@ -195,7 +195,7 @@ public class ClientMenuController {
 
     private void signOut() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("../../GUI_Pages/LoginSignup/Login.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("../../../GUI_Pages/LoginSignup/Login.fxml"));
             Stage stage = (Stage) signOutButton.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {
