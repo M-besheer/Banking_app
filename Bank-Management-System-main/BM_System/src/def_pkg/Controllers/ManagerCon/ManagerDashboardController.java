@@ -1,14 +1,11 @@
 package def_pkg.Controllers.ManagerCon;
-
-import def_pkg.DB_handler;
+import def_pkg.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import def_pkg.Manager;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -19,62 +16,74 @@ public class ManagerDashboardController {
     @FXML private Label welcomeLabel;
     @FXML private Label totalAccountsLabel;
     @FXML private Label totalEmployeesLabel;
-
     @FXML private Button signOutButton;
-    @FXML private Button viewAllAccountsBtn;
-    @FXML private Button viewAllAccountsBtn2;
+    @FXML private Button CreateAccountBtn2;
     @FXML private Button CreateAccountBtn;
-    @FXML private Button CloseAccountBtn;
     @FXML private Button blockUnblockBtn;
     @FXML private Button blockUnblockBtn2;
     @FXML private Button UpdateAccountBtn;
 
-    public void setManagerData(Manager manager) {
+
+    @FXML public void setManagerData(Manager manager) {
         System.out.println("Manager is: " + manager.getName());
+        welcomeLabel.setText("Welcome " + manager.getName());
         this.manager = manager;
-        updateUI(manager); // This will safely call loadDashboardData
+        System.out.println("test test outputt2 -->>" + manager.getName());
+        updateUI(manager);
     }
-    public void updateUI(Manager manager){
-        welcomeLabel.setText("Welcome, " + this.manager.getName());
-        loadDashboardData(manager);
-    }
-    @FXML
-    public void initialize() {
-//        this.manager = new Manager(conn);
-
-        CreateAccountBtn.setOnAction(e->openCreateAccountpage());
-        viewAllAccountsBtn.setOnAction(e-> openViewAccountspage());
-        viewAllAccountsBtn2.setOnAction(e-> openViewAccountspage());
-        CloseAccountBtn.setOnAction(e->openCloseAccountpage());
-        blockUnblockBtn.setOnAction(e->openBlockAccountpage());
-        blockUnblockBtn2.setOnAction(e->openBlockAccountpage());
-        UpdateAccountBtn.setOnAction(e->openUpdateAccountpage());
-
-    }
-
-
-
-    private void loadDashboardData(Manager manager) {
+    @FXML public void updateUI(Manager manager){
         if (manager == null) {
             System.err.println("Manager is not set!");
             return;
         }
-
         try (DB_handler db = new DB_handler()) {
             Connection conn = db.getConnection();
+            System.out.println(welcomeLabel.getText()); welcomeLabel.setText("");
             welcomeLabel.setText("Welcome, " + this.manager.getName());
-            int totalAccounts = manager.getTotalAccounts(conn,manager); // Corrected call
+            int totalAccounts = manager.getTotalAccounts(conn,manager);
             System.out.println("Total Accounts: " + totalAccounts);
-             totalAccountsLabel.setText(String.valueOf(totalAccounts));
-             totalEmployeesLabel.setText(String.valueOf(manager.getTotalEmployees(conn,manager)));
+            totalAccountsLabel.setText(String.valueOf(totalAccounts));
+            totalEmployeesLabel.setText(String.valueOf(manager.getTotalEmployees(conn,manager)));
 
-            } catch (SQLException e) {
+        } catch (SQLException e) {
             showAlert("Database Error", "Failed to load dashboard data: " + e.getMessage());
         }
     }
+    @FXML public void initialize() {
+        CreateAccountBtn.setOnAction(e->openCreateAccountpage());
+        CreateAccountBtn2.setOnAction(e->openCreateAccountpage());
+        blockUnblockBtn.setOnAction(e->openBlockAccountpage());
+        blockUnblockBtn2.setOnAction(e->openBlockAccountpage());
+        UpdateAccountBtn.setOnAction(e->openUpdateAccountpage());
+        signOutButton.setOnAction(e->signOut());
+
+        String normalStyle = "-fx-background-color: #e3f2fd; -fx-text-fill: #1976d2; -fx-font-weight: bold;-fx-background-radius: 10;";
+        String hoverStyle = "-fx-background-color: #3a5a80; -fx-text-fill: white; -fx-font-weight: bold;-fx-background-radius: 10;";
+        setupHoverEffect(CreateAccountBtn,normalStyle,hoverStyle);
+        setupHoverEffect(blockUnblockBtn,normalStyle,hoverStyle);
+        setupHoverEffect(UpdateAccountBtn,normalStyle,hoverStyle);
+        setupHoverEffect(signOutButton,hoverStyle,normalStyle);
+
+    }
+
+    private void setupHoverEffect(Button button, String normalStyle, String hoverStyle) {
+        button.setOnMouseEntered(e -> button.setStyle(hoverStyle));
+        button.setOnMouseExited(e -> button.setStyle(normalStyle));
+    }
+    private void signOut() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("../../../GUI_Pages/LoginSignup/Login.fxml"));
+            Stage stage = (Stage) signOutButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to sign out");
+        }
+    }
+
     private void openCreateAccountpage() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../GUI_Pages/Client/ClientDeposit.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/Manager/ManagerCreateAccount.fxml"));
             Parent root = loader.load();
 
             CreateAccountController  controller = loader.getController();
@@ -83,58 +92,38 @@ public class ManagerDashboardController {
             stage.setScene(new Scene(root));
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Error", "Failed to open account info");
+            showAlert("Error", "Failed to open create account page");
         }
     }
     private void openUpdateAccountpage() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/Manager/ManagerUpdateAccount.fxml"));
+            Parent root = loader.load();
+
+            UpdateAccountController  controller = loader.getController();
+            controller.setManagerData(manager);
+            Stage stage = (Stage) UpdateAccountBtn.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to open update account page");
+        }
     }
 
     private void openBlockAccountpage() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/Manager/ManagerBlockUnblock.fxml"));
+            Parent root = loader.load();
+
+            BlockUnblockController  controller = loader.getController();
+            controller.setManagerData(manager);
+            Stage stage = (Stage) blockUnblockBtn.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to open Block/Unblock account page");
+        }
     }
-
-    private void openCloseAccountpage() {
-    }
-
-    private void openViewAccountspage() {
-    }
-
-
-
-
-//    @FXML
-//    private void handleViewAllAccounts() {
-//        try {
-//            // Implementation to view all accounts
-//            manager.viewAllAccounts();
-//        } catch (SQLException e) {
-//            showAlert("Error", "Failed to view accounts: " + e.getMessage());
-//        }
-//    }
-
-
-//
-//    @FXML
-//    private void handleGenerateReports() {
-//        try {
-//            // Implementation for report generation
-//            manager.generateFinancialReports();
-//        } catch (SQLException e) {
-//            showAlert("Error", "Failed to generate reports: " + e.getMessage());
-//        }
-//    }
-
-//    @FXML
-//    private void handleSignOut() {
-//        // Implementation for sign out
-//        try {
-//            if (conn != null) {
-//                conn.close();
-//            }
-//            // Navigate to login screen
-//        } catch (SQLException e) {
-//            showAlert("Error", "Failed to sign out: " + e.getMessage());
-//        }
-//    }
 
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

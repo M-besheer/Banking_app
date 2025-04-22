@@ -1,35 +1,141 @@
 package def_pkg.Controllers.ManagerCon;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import def_pkg.Bank_Account;
+import def_pkg.Client;
+import def_pkg.DB_handler;
 import def_pkg.Manager;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class CreateAccountController {
-    @FXML private TextField clientIdField;
+    // Form Fields
+    @FXML private TextField firstNameField;
+    @FXML private TextField lastNameField;
+    @FXML private TextField cnicField;
+    @FXML private TextField phoneField;
+    @FXML private TextField emailField;
     @FXML private ComboBox<String> accountTypeCombo;
-    @FXML private TextField initialDepositField;
+    @FXML private TextField fathernameField;
+    @FXML private TextField mothernamefield;
+    @FXML private DatePicker datepicker;
+    @FXML private TextField addressfield;
+
+    // Buttons and Labels
     @FXML private Button createButton;
     @FXML private Button backButton;
+    @FXML private Label createlabel;
 
     private Manager manager;
-
-    public void setManagerData(Manager manager) {
-        System.out.println("Manager is: " + manager.getName());
+    @FXML public void setManagerData(Manager manager) {
         this.manager = manager;
     }
 
-    public void initialize(Connection conn) {
+    @FXML
+    public void initialize() {
+        createButton.setOnAction(e -> handleCreateAccount());
+        backButton.setOnAction(e-> handleBack());
+
+        // Initialize account type dropdown
+        accountTypeCombo.getItems().addAll("Savings", "Checking");
+        // Set default date to today
+        datepicker.setValue(LocalDate.now());
+
+        // Initialize manager and connection
 
     }
 
-    @FXML
-    private void handleCreate() {
-        // Implement account creation logic
+    @FXML private void handleCreateAccount() {
+        try(DB_handler db = new DB_handler()) {
+            Connection conn = db.getConnection();
+
+            // Validate inputs
+            if (!validateInputs()) {
+                return;
+            }
+
+            // Create client first
+            Client client = new Client(
+                    firstNameField.getText(),
+                    lastNameField.getText(),
+                    cnicField.getText(),
+                    phoneField.getText(),
+                    emailField.getText(),
+                    fathernameField.getText(),
+                    mothernamefield.getText(),
+                    datepicker.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    addressfield.getText()
+            );
+
+            // Save to database
+            manager.createAccount(conn, client, accountTypeCombo.getValue());
+            createlabel.setText("Account Created Successfully!");
+        } catch (SQLException e) {
+            showError("Database connection error: " + e.getMessage());
+        }
     }
 
+
     @FXML
-    private void handleBack() {
-        // Navigate back to dashboard
+    private void handleBack(){
+       try {
+           FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/Manager/ManagerDashboard.fxml"));
+           Parent root = loader.load();
+           ManagerDashboardController controller = loader.getController();
+           controller.setManagerData(manager);
+           Scene scene = new Scene(root);
+           Stage stage = (Stage) backButton.getScene().getWindow();
+           stage.setScene(scene);
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+    }
+
+    private boolean validateInputs() {
+        // Check required fields
+        if (firstNameField.getText().isEmpty() || lastNameField.getText().isEmpty() ||
+                cnicField.getText().isEmpty() || phoneField.getText().isEmpty() ||
+                emailField.getText().isEmpty() || accountTypeCombo.getValue() == null ||
+                fathernameField.getText().isEmpty() || mothernamefield.getText().isEmpty() ||
+                addressfield.getText().isEmpty()) {
+
+            showError("Please fill in all required fields");
+            return false;
+        }
+        return true;
+    }
+
+
+    private void clearForm() {
+        firstNameField.clear();
+        lastNameField.clear();
+        cnicField.clear();
+        phoneField.clear();
+        emailField.clear();
+        accountTypeCombo.getSelectionModel().clearSelection();
+        fathernameField.clear();
+        mothernamefield.clear();
+        addressfield.clear();
+        datepicker.setValue(LocalDate.now());
+    }
+
+    private void showError(String message) {
+        createlabel.setText(message);
+        createlabel.setTextFill(Color.RED);
+    }
+
+    private void showSuccess(String message) {
+        createlabel.setText(message);
+        createlabel.setTextFill(Color.GREEN);
     }
 }

@@ -32,6 +32,20 @@ public class Bank_Account {
 		this.status = status;
 		this.opening_date = opening_date;
 	}
+
+	public Bank_Account(String accNum, String type, String balance, String status, String openingDate) {
+		this.acc_num = accNum;
+		this.type = type;
+		this.balance = balance;
+		this.status = status;
+		this.opening_date = openingDate;
+	}
+	@Override
+	public String toString() {
+		return String.format("Account Number: %s\nType: %s\nBalance: %s\nStatus: %s\nOpening Date: %s",
+				acc_num, type, balance, status, opening_date);
+	}
+
 	private Connection establishConnection() {
 		String url = "jdbc:mysql://localhost:3306/bank_schema";
 		String username = "root";
@@ -111,66 +125,6 @@ public class Bank_Account {
 		}
 	}
 
-//	public int addAmount(Connection conn, int amount) throws SQLException {
-//		String sql = "UPDATE bank_account SET balance = balance + ? WHERE acc_num = ?";
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//			pstmt.setInt(1, amount);
-//			pstmt.setString(2, acc_num);
-//			int affectedRows = pstmt.executeUpdate();
-//			if (affectedRows > 0) {
-//				balance = String.valueOf(Integer.parseInt(balance) + amount);
-//			}
-//			return affectedRows;
-//		}
-//	}
-//
-//	public int removeAmount(Connection conn, int amount) throws SQLException {
-//		if (Integer.parseInt(balance) < amount) {
-//			return 0;
-//		}
-//
-//		String sql = "UPDATE bank_account SET balance = balance - ? WHERE acc_num = ?";
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//			pstmt.setInt(1, amount);
-//			pstmt.setString(2, acc_num);
-//			int affectedRows = pstmt.executeUpdate();
-//			if (affectedRows > 0) {
-//				balance = String.valueOf(Integer.parseInt(balance) - amount);
-//			}
-//			return affectedRows;
-//		}
-//	}
-
-//	public static String createCardlessWithdrawal(Connection conn, int accNum, int amount, String pin) throws SQLException {
-//		Random rand = new Random();
-//		String otc = String.format("%04d%04d%04d",
-//				rand.nextInt(9999),
-//				rand.nextInt(9999),
-//				rand.nextInt(9999)
-//		);
-//
-//		String sql = "INSERT INTO cardless_withdrawl (card_no, amount, temp_otc, temp_pin, status) "
-//				+ "SELECT card_num, ?, ?, ?, 'p' FROM bank_account WHERE acc_num = ?";
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//			pstmt.setInt(1, amount);
-//			pstmt.setString(2, otc);
-//			pstmt.setString(3, pin);
-//			pstmt.setInt(4, accNum);
-//			pstmt.executeUpdate();
-//		}
-//		return otc;
-	//}
-
-//	public static boolean isCardActive(Connection conn, int cardNum) throws SQLException {
-//		String sql = "SELECT status FROM card WHERE card_num = ?";
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//			pstmt.setInt(1, cardNum);
-//			try (ResultSet rs = pstmt.executeQuery()) {
-//				return rs.next() && rs.getString("status").equalsIgnoreCase("A");
-//			}
-//		}
-//	}
-
 	public static int getClientId(Connection conn, int accNum) throws SQLException {
 		String sql = "SELECT client_id FROM bank_account WHERE acc_num = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -181,31 +135,6 @@ public class Bank_Account {
 		}
 	}
 
-//	public static void updateStatus(Connection conn, int accNum, String newStatus) throws SQLException {
-//		String sql = "UPDATE bank_account SET status = ? WHERE acc_num = ?";
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//			pstmt.setString(1, newStatus);
-//			pstmt.setInt(2, accNum);
-//			pstmt.executeUpdate();
-//		}
-//	}
-//
-//	public static void updateCardStatus(Connection conn, int cardNum, String status) throws SQLException {
-//		String sql = "UPDATE card SET status = ? WHERE card_num = ?";
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//			pstmt.setString(1, status);
-//			pstmt.setInt(2, cardNum);
-//			pstmt.executeUpdate();
-//		}
-//	}
-
-	public static void closeAccount(Connection conn, int accNum) throws SQLException { ///////////////boobs
-		String sql = "UPDATE bank_account SET status = '0', closing_date = CURDATE() WHERE acc_num = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, accNum);
-			pstmt.executeUpdate();
-		}
-	}
 
 	public static String getCNIC(Connection conn, int clientId) throws SQLException {
 		String sql = "SELECT CNIC FROM client WHERE client_id = ?";
@@ -217,15 +146,6 @@ public class Bank_Account {
 		}
 	}
 
-	//	public static int getCardNumber(Connection conn, int accNum) throws SQLException {
-//		String sql = "SELECT card_num FROM bank_account WHERE acc_num = ?";
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//			pstmt.setInt(1, accNum);
-//			try (ResultSet rs = pstmt.executeQuery()) {
-//				return rs.next() ? rs.getInt("card_num") : -1;
-//			}
-//		}
-//	}
 	public static Bank_Account getByLoginId(Connection conn, int loginId) throws SQLException {
 		String sql = "SELECT * FROM bank_account WHERE login_id = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {

@@ -72,7 +72,7 @@
         </GridPane>
       <Label fx:id="createlabel" alignment="CENTER" layoutX="150.0" layoutY="640.0" prefHeight="40.0" prefWidth="900.0" style="-fx-text-fill: white; -fx-font-size: 28;">
          <font>
-            <Font name="Century Gothic Bold" size="28.0" />
+            <Font name="Century Gothic Bold" size="15.0" />
          </font>
       </Label>
     </Pane>

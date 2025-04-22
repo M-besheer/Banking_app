@@ -1,6 +1,8 @@
 package def_pkg;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Manager {
 	private String name;
@@ -152,6 +154,43 @@ public class Manager {
 			pstmt.executeUpdate();
 		}
 	}
+
+	public List<Bank_Account> viewAllAccounts(Connection conn) throws SQLException {
+		List<Bank_Account> accounts = new ArrayList<>();
+		String sql = "SELECT acc_num, type, balance, status, opening_date FROM bank_account";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql);
+			 ResultSet rs = pstmt.executeQuery()) {
+			while (rs.next()) {
+				accounts.add(new Bank_Account(
+						rs.getString("acc_num"),
+						rs.getString("type"),
+						rs.getString("balance"),
+						rs.getString("status"),
+						rs.getString("opening_date")
+				));
+			}
+		}
+		return accounts;
+	}
+//
+//	public Bank_Account ViewAccount(Connection conn, Manager manager) throws SQLException {
+//		String sql = "SELECT acc_num,type,balance,status,opening_date FROM bank_account";
+//		try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+//			try (ResultSet rs = pstmt.executeQuery()) {
+//			if (rs.next()) {
+//				return new Bank_Account(
+//						rs.getString("acc_num"),
+//						rs.getString("type"),
+//						rs.getString("balance"),
+//						rs.getString("status"),
+//						rs.getString("opening_date")
+//				);
+//			}
+//		}
+//		}
+//		return null;
+//	}
 
 	public int getTotalAccounts(Connection conn,Manager manager) throws SQLException {
 		String sql = "SELECT COUNT(*) AS total_accounts FROM bank_account";

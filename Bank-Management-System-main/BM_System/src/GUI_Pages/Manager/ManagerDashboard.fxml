@@ -18,14 +18,14 @@
 
         <!-- Header -->
         <Pane prefHeight="100" prefWidth="1100" style="-fx-background-color: #4a6fa5; -fx-background-radius: 0 0 20 20;">
-            <Label fx:id="welcomeLabel" layoutX="30" layoutY="25" style="-fx-text-fill: white; -fx-font-size: 24;">
+            <Label fx:id="welcomeLabel" layoutX="30" layoutY="25" style="-fx-text-fill: white; -fx-font-size: 24;" text="Welcome!">
                 <font>
                     <Font name="Segoe UI Bold" size="24.0" />
                 </font>
             </Label>
             <Label layoutX="30.0" layoutY="66.0" style="-fx-text-fill: #e0e0e0; -fx-font-size: 14;" text="Manager Dashboard" />
 
-            <Button fx:id="signOutButton" layoutX="950" layoutY="30" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: white; -fx-border-radius: 15;" text="SIGN OUT">
+            <Button fx:id="signOutButton" layoutX="950" layoutY="30" style="-fx-background-color: #3a5a80; -fx-text-fill: white; -fx-background-radius: 10;" text="SIGN OUT">
                 <font>
                     <Font name="Segoe UI Bold" size="12.0" />
                 </font>
@@ -39,10 +39,8 @@
                 <Label layoutX="20" layoutY="20" style="-fx-text-fill: #4a6fa5; -fx-font-size: 16; -fx-font-weight: bold;" text="MANAGER ACTIONS" />
 
                 <VBox layoutX="20" layoutY="60" spacing="15">
-                    <Button fx:id="viewAllAccountsBtn" prefHeight="45" prefWidth="260" style="-fx-background-color: #e3f2fd; -fx-text-fill: #1976d2; -fx-background-radius: 10; -fx-font-weight: bold;" text="View All Accounts" />
                     <Button fx:id="CreateAccountBtn" prefHeight="45" prefWidth="260" style="-fx-background-color: #e3f2fd; -fx-text-fill: #1976d2; -fx-background-radius: 10; -fx-font-weight: bold;" text="Create Account" />
                <Button fx:id="blockUnblockBtn" prefHeight="45" prefWidth="260" style="-fx-background-color: #e3f2fd; -fx-text-fill: #1976d2; -fx-background-radius: 10; -fx-font-weight: bold;" text="Block/Unblock Account" />
-               <Button fx:id="CloseAccountBtn" prefHeight="45" prefWidth="260" style="-fx-background-color: #e3f2fd; -fx-text-fill: #1976d2; -fx-background-radius: 10; -fx-font-weight: bold;" text="Close Account" />
                <Button fx:id="UpdateAccountBtn" prefHeight="45" prefWidth="260" style="-fx-background-color: #e3f2fd; -fx-text-fill: #1976d2; -fx-background-radius: 10; -fx-font-weight: bold;" text="Update Account Info" />
                 </VBox>
             </Pane>
@@ -59,13 +57,13 @@
                             <ColumnConstraints maxWidth="209.33335367838538" minWidth="147.33335367838538" prefWidth="199.99997965494788" />
                         </columnConstraints>
 
-                        <Label style="-fx-text-fill: #666; -fx-font-size: 14;" text="Total Accounts:" />
+                        <Label style="-fx-text-fill: #666; -fx-font-size: 14; -fx-font-weight: bold;" text="Total Accounts:" />
                         <Label fx:id="totalAccountsLabel" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="197.0" style="-fx-text-fill: #333; -fx-font-size: 16; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="0">
                      <GridPane.margin>
                         <Insets right="10.0" />
                      </GridPane.margin></Label>
 
-                        <Label style="-fx-text-fill: #666; -fx-font-size: 14;" text="Employees:" GridPane.columnIndex="1" />
+                        <Label style="-fx-text-fill: #666; -fx-font-size: 14; -fx-font-weight: bold;" text="Employees:" GridPane.columnIndex="1" />
                         <Label fx:id="totalEmployeesLabel" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="187.0" style="-fx-text-fill: #333; -fx-font-size: 16; -fx-font-weight: bold;" GridPane.columnIndex="1">
                      <padding>
                         <Insets right="10.0" />
@@ -86,8 +84,8 @@
                         <Image url="@../../images/profile.png" />
                      </image>
                   </ImageView>
-                  <Label style="-fx-text-fill: #4a6fa5; -fx-font-size: 16; -fx-font-weight: bold;" text="View All Accounts" />
-                  <Button fx:id="viewAllAccountsBtn2" prefWidth="100" style="-fx-background-color: #4a6fa5; -fx-text-fill: white; -fx-background-radius: 5;" text="VIEW" />
+                  <Label style="-fx-text-fill: #4a6fa5; -fx-font-size: 16; -fx-font-weight: bold;" text="Create Account" />
+                  <Button fx:id="CreateAccountBtn2" prefWidth="100" style="-fx-background-color: #4a6fa5; -fx-text-fill: white; -fx-background-radius: 5;" text="CREATE" />
                </children>
             </VBox>
             <VBox alignment="CENTER" layoutX="389.0" layoutY="273.0" prefHeight="239.0" prefWidth="200.0" spacing="10" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
