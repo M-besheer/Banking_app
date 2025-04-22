@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.Button?>
+<AnchorPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="def_pkg.Controllers.ManagerCon.ViewAllAccountsController">
+    <Pane prefHeight="700" prefWidth="1100" style="-fx-background-color: #f5f7fa;">
+        <Pane prefHeight="100" prefWidth="1100" style="-fx-background-color: #4a6fa5; -fx-background-radius: 0 0 20 20;">
+            <Label layoutX="30" layoutY="25" style="-fx-text-fill: white; -fx-font-size: 24;" text="All Accounts">
+                <font><Font name="Segoe UI Bold" size="24.0" /></font>
+            </Label>
+            <Button fx:id="backButton" layoutX="950" layoutY="30" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: white; -fx-border-radius: 15;" text="BACK"/>
+        </Pane>
+
+        <TableView fx:id="accountsTable" layoutX="50" layoutY="150" prefHeight="500" prefWidth="1000">
+            <columns>
+                <TableColumn fx:id="accNumCol" prefWidth="150" text="Account Number"/>
+                <TableColumn fx:id="clientNameCol" prefWidth="200" text="Client Name"/>
+                <TableColumn fx:id="balanceCol" prefWidth="150" text="Balance"/>
+                <TableColumn fx:id="typeCol" prefWidth="150" text="Type"/>
+                <TableColumn fx:id="statusCol" prefWidth="150" text="Status"/>
+                <TableColumn fx:id="openDateCol" prefWidth="150" text="Open Date"/>
+            </columns>
+        </TableView>
+    </Pane>
+</AnchorPane>
