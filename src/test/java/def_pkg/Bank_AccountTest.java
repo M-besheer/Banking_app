@@ -77,7 +77,7 @@ class Bank_AccountTest {
     }
 
     @Test
-    void closeAccount() { //Useless ahh funcion, delete it..................
+    void closeAccount() { //Useless ahh funcion, delete it...................
     }
 
     @Test
