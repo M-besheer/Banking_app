@@ -72,6 +72,7 @@ public class Client {
 
 	// Getters
 	public String getClientID() { return client_id; }
+
 	public String getFName() { return f_name; }
 	public String getLName() { return l_name; }
 	public String getFatherName() { return father_name; }
@@ -85,7 +86,7 @@ public class Client {
 	// Database operations
 	public void save(Connection conn) throws SQLException {
 		String sql = "INSERT INTO client (f_name, l_name, father_name, mother_name, CNIC, DOB, phone, email, address) "
-				+ "VALUES (?, ?, ?, ?, ?, STR_TO_DATE(?, '%d,%m,%Y'), ?, ?, ?)";
+				+ "VALUES (?, ?, ?, ?, ?, STR_TO_DATE(?, '%d/%m/%Y'), ?, ?, ?)";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setString(1, f_name);
 			pstmt.setString(2, l_name);
@@ -265,32 +266,7 @@ public class Client {
 		}
 	}
 
-	public List<Transaction_History> getTransactions(Connection conn, String fromDate, String toDate) throws SQLException {
-		List<Transaction_History> transactions = new ArrayList<>();
-		String sql = "SELECT * FROM transaction_history "
-				+ "WHERE account_num IN (SELECT acc_num FROM bank_account WHERE client_id = ?) "
-				+ "AND date BETWEEN ? AND ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, client_id);
-			pstmt.setString(2, fromDate);
-			pstmt.setString(3, toDate);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				while (rs.next()) {
-					transactions.add(new Transaction_History(
-							rs.getString("serial_no"),
-							rs.getString("amount"),
-							rs.getString("type"),
-							rs.getString("date"),
-							rs.getString("time"),
-							rs.getString("account_num"),
-							rs.getString("recv_acc_num"),
-							rs.getString("cheque_num")
-					));
-				}
-			}
-		}
-		return transactions;
-	}
+
 	public static Client getByCNIC(Connection conn, String CNIC) throws SQLException {
 		String sql = "SELECT * FROM client WHERE CNIC = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -326,4 +302,6 @@ public class Client {
 		System.out.println("Email: " + email);
 		System.out.println("Address: " + address);
 	}
+
+
 }

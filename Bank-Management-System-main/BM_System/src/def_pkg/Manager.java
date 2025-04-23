@@ -40,19 +40,21 @@ public class Manager {
 			if (existingClient == null) {
 				newClient.save(conn);
 				existingClient = newClient;
-			}
 
-			// Create new account
-			String sql = "INSERT INTO bank_account (client_id, type, balance, status, opening_date) "
-					+ "VALUES (?, ?, 0, 1, CURDATE())";
-			try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-				pstmt.setString(1, existingClient.getClientID());
-				pstmt.setString(2, type);
-				pstmt.executeUpdate();
-			}
 
-			conn.commit();
-			return 0;
+				// Create new account
+				String sql = "INSERT INTO bank_account (client_id, type, balance, status, opening_date) "
+						+ "VALUES (?, ?, 0, 1, CURDATE())";
+				try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+					pstmt.setString(1, existingClient.getClientID());
+					pstmt.setString(2, type);
+					pstmt.executeUpdate();
+				}
+
+				conn.commit();
+				return 0;
+			}
+			else return 1;
 		} catch (SQLException e) {
 			conn.rollback();
 			throw e;
@@ -99,19 +101,6 @@ public class Manager {
 		}
 	}
 
-	public int closeAccount(Connection conn, String accountNum, String cnic) throws SQLException {
-		if (!verifyAccountOwnership(conn, Integer.parseInt(accountNum), cnic)) {
-			return -1; // Ownership verification failed
-		}
-
-		String sql = "UPDATE bank_account SET status = 0, closing_date = CURDATE() WHERE acc_num = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, accountNum);
-			int affected = pstmt.executeUpdate();
-			return affected > 0 ? 0 : -2; // -2 if account not found
-		}
-	}
-
 	// Information retrieval methods
 	public Client getClientInfo(Connection conn, String accNum) throws SQLException {
 		String sql = "SELECT c.* FROM client c "
@@ -143,8 +132,7 @@ public class Manager {
 		return Bank_Account.getByAccountNumber(conn, accNum);
 	}
 
-	public void updateClientInfo(Connection conn, String clientId, String phone,
-								 String email, String address) throws SQLException {
+	public void updateClientInfo(Connection conn, String clientId, String phone,  String email, String address) throws SQLException {
 		String sql = "UPDATE client SET phone = ?, email = ?, address = ? WHERE client_id = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, phone);
@@ -154,43 +142,6 @@ public class Manager {
 			pstmt.executeUpdate();
 		}
 	}
-
-	public List<Bank_Account> viewAllAccounts(Connection conn) throws SQLException {
-		List<Bank_Account> accounts = new ArrayList<>();
-		String sql = "SELECT acc_num, type, balance, status, opening_date FROM bank_account";
-
-		try (PreparedStatement pstmt = conn.prepareStatement(sql);
-			 ResultSet rs = pstmt.executeQuery()) {
-			while (rs.next()) {
-				accounts.add(new Bank_Account(
-						rs.getString("acc_num"),
-						rs.getString("type"),
-						rs.getString("balance"),
-						rs.getString("status"),
-						rs.getString("opening_date")
-				));
-			}
-		}
-		return accounts;
-	}
-//
-//	public Bank_Account ViewAccount(Connection conn, Manager manager) throws SQLException {
-//		String sql = "SELECT acc_num,type,balance,status,opening_date FROM bank_account";
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)){
-//			try (ResultSet rs = pstmt.executeQuery()) {
-//			if (rs.next()) {
-//				return new Bank_Account(
-//						rs.getString("acc_num"),
-//						rs.getString("type"),
-//						rs.getString("balance"),
-//						rs.getString("status"),
-//						rs.getString("opening_date")
-//				);
-//			}
-//		}
-//		}
-//		return null;
-//	}
 
 	public int getTotalAccounts(Connection conn,Manager manager) throws SQLException {
 		String sql = "SELECT COUNT(*) AS total_accounts FROM bank_account";

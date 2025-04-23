@@ -6,11 +6,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javax.swing.*;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class ManagerDashboardController {
+
     private Manager manager;
 
     @FXML private Label welcomeLabel;
@@ -28,7 +30,6 @@ public class ManagerDashboardController {
         System.out.println("Manager is: " + manager.getName());
         welcomeLabel.setText("Welcome " + manager.getName());
         this.manager = manager;
-        System.out.println("test test outputt2 -->>" + manager.getName());
         updateUI(manager);
     }
     @FXML public void updateUI(Manager manager){
@@ -49,9 +50,10 @@ public class ManagerDashboardController {
             showAlert("Database Error", "Failed to load dashboard data: " + e.getMessage());
         }
     }
+
     @FXML public void initialize() {
-        CreateAccountBtn.setOnAction(e->openCreateAccountpage());
-        CreateAccountBtn2.setOnAction(e->openCreateAccountpage());
+        CreateAccountBtn.setOnAction(e->showClientAccountOptions());
+        CreateAccountBtn2.setOnAction(e->showClientAccountOptions());
         blockUnblockBtn.setOnAction(e->openBlockAccountpage());
         blockUnblockBtn2.setOnAction(e->openBlockAccountpage());
         UpdateAccountBtn.setOnAction(e->openUpdateAccountpage());
@@ -65,7 +67,31 @@ public class ManagerDashboardController {
         setupHoverEffect(signOutButton,hoverStyle,normalStyle);
 
     }
+    public void showClientAccountOptions() {
+        // Create the main frame
+        JFrame frame = new JFrame("Client Account Options");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        // Show a dialog with two options
+        String[] options = {"Existing Client", "New Client"};
+        int choice = JOptionPane.showOptionDialog(
+                frame,
+                "Create account for:",
+                "Client Account Options",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, // No custom icon
+                options, // Button options
+                options[0] // Default button
+        );
+
+        // Handle the button clicks
+        if (choice == JOptionPane.YES_OPTION) {
+            openExistingClientPage();
+        } else if (choice == JOptionPane.NO_OPTION) {
+            openCreateAccountpage();
+        }
+    }
     private void setupHoverEffect(Button button, String normalStyle, String hoverStyle) {
         button.setOnMouseEntered(e -> button.setStyle(hoverStyle));
         button.setOnMouseExited(e -> button.setStyle(normalStyle));
@@ -81,7 +107,7 @@ public class ManagerDashboardController {
         }
     }
 
-    private void openCreateAccountpage() {
+    public void openCreateAccountpage() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/Manager/ManagerCreateAccount.fxml"));
             Parent root = loader.load();
@@ -95,6 +121,22 @@ public class ManagerDashboardController {
             showAlert("Error", "Failed to open create account page");
         }
     }
+
+    public void openExistingClientPage() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/Manager/ManagerExistingClient.fxml"));
+            Parent root = loader.load();
+
+            ManagerExistingClientController  controller = loader.getController();
+            controller.setManager(manager);
+            Stage stage = (Stage) CreateAccountBtn.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to open create account page");
+        }
+    }
+
     private void openUpdateAccountpage() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/Manager/ManagerUpdateAccount.fxml"));

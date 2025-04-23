@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -54,7 +55,6 @@ public class CreateAccountController {
         // Initialize manager and connection
 
     }
-
     @FXML private void handleCreateAccount() {
         try(DB_handler db = new DB_handler()) {
             Connection conn = db.getConnection();
@@ -63,25 +63,28 @@ public class CreateAccountController {
             if (!validateInputs()) {
                 return;
             }
+            String dob = datepicker.getValue().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
             // Create client first
             Client client = new Client(
                     firstNameField.getText(),
                     lastNameField.getText(),
-                    cnicField.getText(),
-                    phoneField.getText(),
-                    emailField.getText(),
                     fathernameField.getText(),
                     mothernamefield.getText(),
-                    datepicker.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    cnicField.getText(),
+                    dob,
+                    phoneField.getText(),
+                    emailField.getText(),
                     addressfield.getText()
             );
 
             // Save to database
             manager.createAccount(conn, client, accountTypeCombo.getValue());
             createlabel.setText("Account Created Successfully!");
+            createlabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-background-color: green;-fx-font-weight: bold;");
         } catch (SQLException e) {
             showError("Database connection error: " + e.getMessage());
+            System.out.println("Database connection error: " + e.getMessage());
         }
     }
 
