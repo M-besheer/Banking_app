@@ -130,16 +130,6 @@ public class Client {
 		return null;
 	}
 
-//	public void update(Connection conn) throws SQLException {
-//		String sql = "UPDATE client SET phone = ?, email = ?, address = ? WHERE client_id = ?";
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//			pstmt.setString(1, phone);
-//			pstmt.setString(2, email);
-//			pstmt.setString(3, address);
-//			pstmt.setString(4, client_id);
-//			pstmt.executeUpdate();
-//		}
-//	}
 
 	public int transferMoney(Connection conn, String recvAccNum, int amount) throws SQLException {
 		try {
@@ -265,32 +255,7 @@ public class Client {
 		}
 	}
 
-	public List<Transaction_History> getTransactions(Connection conn, String fromDate, String toDate) throws SQLException {
-		List<Transaction_History> transactions = new ArrayList<>();
-		String sql = "SELECT * FROM transaction_history "
-				+ "WHERE account_num IN (SELECT acc_num FROM bank_account WHERE client_id = ?) "
-				+ "AND date BETWEEN ? AND ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, client_id);
-			pstmt.setString(2, fromDate);
-			pstmt.setString(3, toDate);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				while (rs.next()) {
-					transactions.add(new Transaction_History(
-							rs.getString("serial_no"),
-							rs.getString("amount"),
-							rs.getString("type"),
-							rs.getString("date"),
-							rs.getString("time"),
-							rs.getString("account_num"),
-							rs.getString("recv_acc_num"),
-							rs.getString("cheque_num")
-					));
-				}
-			}
-		}
-		return transactions;
-	}
+
 	public static Client getByCNIC(Connection conn, String CNIC) throws SQLException {
 		String sql = "SELECT * FROM client WHERE CNIC = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {

@@ -69,7 +69,8 @@ class ClientTest {
         assertEquals("01025012367", fetched.getPhone());
         assertEquals("omarahmed3001@gmail.com", fetched.getEmail());
         assertEquals("24, Doughnut St, City of Stars, La La Land", fetched.getAddress());Client.getById(conn,c.getClientID());
-        // test 2
+
+
 
     }
 
