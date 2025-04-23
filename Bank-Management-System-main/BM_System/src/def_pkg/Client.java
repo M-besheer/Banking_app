@@ -256,10 +256,10 @@ public class Client {
 	}
 
 
-	public static Client getByCNIC(Connection conn, String CNIC) throws SQLException {
+	public static Client getByCNIC(Connection conn, String cnic) throws SQLException {
 		String sql = "SELECT * FROM client WHERE CNIC = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, CNIC);
+			pstmt.setString(1, cnic);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
 					return new Client(
@@ -274,11 +274,13 @@ public class Client {
 							rs.getString("email"),
 							rs.getString("address")
 					);
+				} else {
+					return null;
 				}
 			}
 		}
-		return null;
 	}
+
 
 	public void showClientInfo() {
 		System.out.println("First Name: " + f_name);
