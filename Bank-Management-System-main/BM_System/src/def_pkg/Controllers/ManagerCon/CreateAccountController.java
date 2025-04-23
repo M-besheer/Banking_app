@@ -48,7 +48,7 @@ public class CreateAccountController {
         backButton.setOnAction(e-> handleBack());
 
         // Initialize account type dropdown
-        accountTypeCombo.getItems().addAll("Savings", "Checking");
+        accountTypeCombo.getItems().addAll("Savings", "Current");
         // Set default date to today
         datepicker.setValue(LocalDate.now());
 
@@ -58,14 +58,8 @@ public class CreateAccountController {
     @FXML private void handleCreateAccount() {
         try(DB_handler db = new DB_handler()) {
             Connection conn = db.getConnection();
-
-            // Validate inputs
-            if (!validateInputs()) {
-                return;
-            }
+            if (!validateInputs()) {return;}
             String dob = datepicker.getValue().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-
-            // Create client first
             Client client = new Client(
                     firstNameField.getText(),
                     lastNameField.getText(),
@@ -77,13 +71,18 @@ public class CreateAccountController {
                     emailField.getText(),
                     addressfield.getText()
             );
-
-            // Save to database
-            manager.createAccount(conn, client, accountTypeCombo.getValue());
+            int isvalid = manager.createAccount(conn, client, accountTypeCombo.getValue());
+            if (isvalid == 1) {
+                showError("Account with corresponding CNIC already exists!") ;
+                cnicField.setStyle("-fx-background-color: pink; -fx-border-color: red; -fx-text-fill: red;");
+                return;
+            }
+            else{
             createlabel.setText("Account Created Successfully!");
             createlabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-background-color: green;-fx-font-weight: bold;");
+            clearForm();
+            }
         } catch (SQLException e) {
-            showError("Database connection error: " + e.getMessage());
             System.out.println("Database connection error: " + e.getMessage());
         }
     }
@@ -113,6 +112,7 @@ public class CreateAccountController {
                 addressfield.getText().isEmpty()) {
 
             showError("Please fill in all required fields");
+            cnicField.setStyle("");
             return false;
         }
         return true;
@@ -134,11 +134,11 @@ public class CreateAccountController {
 
     private void showError(String message) {
         createlabel.setText(message);
-        createlabel.setTextFill(Color.RED);
+        createlabel.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-font-weight: bold; -fx-font-size: 18;");
     }
 
     private void showSuccess(String message) {
         createlabel.setText(message);
-        createlabel.setTextFill(Color.GREEN);
+        createlabel.setStyle("-fx-text-fill: white; -fx-background-color: green; -fx-font-weight: bold; -fx-font-size: 18;");
     }
 }

@@ -44,5 +44,10 @@
             <RowConstraints />
          </rowConstraints>
         </GridPane>
+      <Label fx:id="messagelabel" alignment="CENTER" layoutX="367.0" layoutY="291.0" prefHeight="25.0" prefWidth="373.0">
+         <font>
+            <Font name="Century Gothic Bold" size="18.0" />
+         </font>
+      </Label>
     </Pane>
 </AnchorPane>

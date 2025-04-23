@@ -11,7 +11,7 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="def_pkg.Controllers.ManagerCon.UpdateAccountController">
-    <Pane prefHeight="700" prefWidth="1100" style="-fx-background-color: #f5f7fa;">
+    <Pane prefHeight="800.0" prefWidth="1100" style="-fx-background-color: #f5f7fa;">
         <Pane prefHeight="100" prefWidth="1100" style="-fx-background-color: #4a6fa5; -fx-background-radius: 0 0 20 20;">
             <Label layoutX="30" layoutY="25" style="-fx-text-fill: white; -fx-font-size: 24;" text="Update Client">
                 <font><Font name="Segoe UI Bold" size="24.0" /></font>
@@ -33,66 +33,96 @@
         </GridPane>
 
         <!-- Client Details Section -->
-        <GridPane fx:id="clientDetailsPane" hgap="30.0" layoutX="202.0" layoutY="194.0" prefHeight="382.0" prefWidth="697.0" style="-fx-padding: 20; -fx-border-color: #dcdcdc; -fx-border-radius: 15; -fx-background-radius: 15; -fx-background-color: #ffffff;" vgap="15" visible="false">
+        <GridPane fx:id="clientDetailsPane" hgap="30.0" layoutX="202.0" layoutY="194.0" prefHeight="527.0" prefWidth="702.0" style="-fx-padding: 20; -fx-border-color: #dcdcdc; -fx-border-radius: 15; -fx-background-radius: 15; -fx-background-color: #ffffff;" vgap="15" visible="false">
             <Label text="Client ID:">
             <font>
                <Font name="Century Gothic" size="18.0" />
             </font></Label>
-            <Label fx:id="clientIDLabel" GridPane.columnIndex="1" />
+            <Label fx:id="clientIDLabel" GridPane.columnIndex="1">
+            <font>
+               <Font name="Century Gothic Bold Italic" size="18.0" />
+            </font></Label>
 
             <Label text="First Name:" GridPane.rowIndex="1">
             <font>
                <Font name="Century Gothic" size="18.0" />
             </font></Label>
-            <TextField fx:id="firstNameField" editable="false" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="firstNameField" editable="false" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <font>
+               <Font name="Century Gothic Bold Italic" size="18.0" />
+            </font></TextField>
 
             <Label text="Last Name:" GridPane.rowIndex="2">
             <font>
                <Font name="Century Gothic" size="18.0" />
             </font></Label>
-            <TextField fx:id="lastNameField" editable="false" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextField fx:id="lastNameField" editable="false" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <font>
+               <Font name="Century Gothic Bold Italic" size="18.0" />
+            </font></TextField>
 
             <Label text="Father Name:" GridPane.rowIndex="3">
             <font>
                <Font name="Century Gothic" size="18.0" />
             </font></Label>
-            <TextField fx:id="fatherNameField" editable="false" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <TextField fx:id="fatherNameField" editable="false" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <font>
+               <Font name="Century Gothic Bold Italic" size="18.0" />
+            </font></TextField>
 
             <Label text="Mother Name:" GridPane.rowIndex="4">
             <font>
                <Font name="Century Gothic" size="18.0" />
             </font></Label>
-            <TextField fx:id="motherNameField" editable="false" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <TextField fx:id="motherNameField" editable="false" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <font>
+               <Font name="Century Gothic Bold Italic" size="18.0" />
+            </font></TextField>
 
             <Label text="CNIC:" GridPane.rowIndex="5">
             <font>
                <Font name="Century Gothic" size="18.0" />
             </font></Label>
-            <TextField fx:id="cnicField" editable="false" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <TextField fx:id="cnicField" editable="false" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="5">
+            <font>
+               <Font name="Century Gothic Bold Italic" size="18.0" />
+            </font></TextField>
 
             <Label text="DOB:" GridPane.rowIndex="6">
             <font>
                <Font name="Century Gothic" size="18.0" />
             </font></Label>
-            <TextField fx:id="dobField" editable="false" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <TextField fx:id="dobField" editable="false" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="6">
+            <font>
+               <Font name="Century Gothic Bold Italic" size="18.0" />
+            </font></TextField>
 
             <Label text="Phone:" GridPane.rowIndex="7">
             <font>
                <Font name="Century Gothic" size="18.0" />
             </font></Label>
-            <TextField fx:id="phoneField" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+            <TextField fx:id="phoneField" GridPane.columnIndex="1" GridPane.rowIndex="7">
+            <font>
+               <Font name="Century Gothic Bold Italic" size="18.0" />
+            </font></TextField>
 
             <Label text="Email:" GridPane.rowIndex="8">
             <font>
                <Font name="Century Gothic" size="18.0" />
             </font></Label>
-            <TextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+            <TextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="8">
+            <font>
+               <Font name="Century Gothic Bold Italic" size="18.0" />
+            </font></TextField>
 
             <Label text="Address:" GridPane.rowIndex="9">
             <font>
                <Font name="Century Gothic" size="18.0" />
             </font></Label>
-            <TextField fx:id="addressField" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+            <TextField fx:id="addressField" GridPane.columnIndex="1" GridPane.rowIndex="9">
+            <font>
+               <Font name="Century Gothic Bold Italic" size="18.0" />
+            </font></TextField>
 
             <Button fx:id="updateButton" prefHeight="35.0" prefWidth="158.0" text="UPDATE" GridPane.columnSpan="2" GridPane.rowIndex="10">
                 <font>

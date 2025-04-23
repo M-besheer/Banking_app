@@ -52,8 +52,8 @@ public class ManagerDashboardController {
     }
 
     @FXML public void initialize() {
-        CreateAccountBtn.setOnAction(e->showClientAccountOptions());
-        CreateAccountBtn2.setOnAction(e->showClientAccountOptions());
+        CreateAccountBtn.setOnAction(e->openCreateAccountpage());
+        CreateAccountBtn2.setOnAction(e->openCreateAccountpage());
         blockUnblockBtn.setOnAction(e->openBlockAccountpage());
         blockUnblockBtn2.setOnAction(e->openBlockAccountpage());
         UpdateAccountBtn.setOnAction(e->openUpdateAccountpage());
@@ -67,31 +67,7 @@ public class ManagerDashboardController {
         setupHoverEffect(signOutButton,hoverStyle,normalStyle);
 
     }
-    public void showClientAccountOptions() {
-        // Create the main frame
-        JFrame frame = new JFrame("Client Account Options");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Show a dialog with two options
-        String[] options = {"Existing Client", "New Client"};
-        int choice = JOptionPane.showOptionDialog(
-                frame,
-                "Create account for:",
-                "Client Account Options",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, // No custom icon
-                options, // Button options
-                options[0] // Default button
-        );
-
-        // Handle the button clicks
-        if (choice == JOptionPane.YES_OPTION) {
-            openExistingClientPage();
-        } else if (choice == JOptionPane.NO_OPTION) {
-            openCreateAccountpage();
-        }
-    }
     private void setupHoverEffect(Button button, String normalStyle, String hoverStyle) {
         button.setOnMouseEntered(e -> button.setStyle(hoverStyle));
         button.setOnMouseExited(e -> button.setStyle(normalStyle));
@@ -114,21 +90,6 @@ public class ManagerDashboardController {
 
             CreateAccountController  controller = loader.getController();
             controller.setManagerData(manager);
-            Stage stage = (Stage) CreateAccountBtn.getScene().getWindow();
-            stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Error", "Failed to open create account page");
-        }
-    }
-
-    public void openExistingClientPage() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../GUI_Pages/Manager/ManagerExistingClient.fxml"));
-            Parent root = loader.load();
-
-            ManagerExistingClientController  controller = loader.getController();
-            controller.setManager(manager);
             Stage stage = (Stage) CreateAccountBtn.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {

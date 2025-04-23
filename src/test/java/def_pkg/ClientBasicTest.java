@@ -18,7 +18,7 @@ class ClientBasicTest {
         conn = establishConnection();
 
         c = new Client("Omar","Dardir", "Ahmed",
-                "Sameha", "30501300106716", "30,01,2005", "0978753",
+                "Sameha", "30501300106716", "30/01/2005", "0978753",
                 "omarahmed3001@gmail.com", "24, Doughnut St, City of Stars, La La Land");
     }
 
@@ -99,11 +99,4 @@ class ClientBasicTest {
         Client result = Client.getByCNIC(conn, "123");
         assertNull(result, "Expected null when CNIC does not exist in database");
     }
-
-
-
-
-
-
-
 }
