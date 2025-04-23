@@ -40,19 +40,22 @@ public class Manager {
 			if (existingClient == null) {
 				newClient.save(conn);
 				existingClient = newClient;
+
+
+				// Create new account
+				String sql = "INSERT INTO bank_account (client_id, type, balance, status, opening_date) "
+						+ "VALUES (?, ?, 0, 1, CURDATE())";
+				try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+					pstmt.setString(1, existingClient.getClientID());
+					pstmt.setString(2, type);
+					pstmt.executeUpdate();
+				}
+
+				conn.commit();
+				return 0;
 			}
 
-			// Create new account
-			String sql = "INSERT INTO bank_account (client_id, type, balance, status, opening_date) "
-					+ "VALUES (?, ?, 0, 1, CURDATE())";
-			try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-				pstmt.setString(1, existingClient.getClientID());
-				pstmt.setString(2, type);
-				pstmt.executeUpdate();
-			}
-
-			conn.commit();
-			return 0;
+			else return 1; //client already exists
 		} catch (SQLException e) {
 			conn.rollback();
 			throw e;
@@ -139,9 +142,6 @@ public class Manager {
 		return null;
 	}
 
-	public Bank_Account getAccountInfo(Connection conn, String accNum) throws SQLException {
-		return Bank_Account.getByAccountNumber(conn, accNum);
-	}
 
 	public void updateClientInfo(Connection conn, String clientId, String phone,
 								 String email, String address) throws SQLException {
@@ -173,6 +173,7 @@ public class Manager {
 		}
 		return accounts;
 	}
+
 //
 //	public Bank_Account ViewAccount(Connection conn, Manager manager) throws SQLException {
 //		String sql = "SELECT acc_num,type,balance,status,opening_date FROM bank_account";
