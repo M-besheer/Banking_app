@@ -1,13 +1,12 @@
 package def_pkg;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.sql.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class Bank_AccountTest {
 
     private Connection conn;
@@ -35,7 +34,8 @@ class Bank_AccountTest {
     }
 
     @Test
-    void getByClientId() throws SQLException {
+    @Order(1)
+    void getByValidClientId() throws SQLException {
 //        String clientID= TestClient.getClientID();
 //        System.out.println("Client ID: " + clientID);
         Bank_Account bank_accountTest=Bank_Account.getByClientId(conn, TestClient.getClientID());
@@ -50,9 +50,24 @@ class Bank_AccountTest {
 //        assertEquals("2025-04-15", bank_accountTest.getOpeningDate());
     }
 
+    @Test
+    void getByInvalidClientId() throws SQLException {
+        Bank_Account bank_accountTest=Bank_Account.getByClientId(conn, "0");
+
+        assertNull(bank_accountTest);
+    }
 
     @Test
-    void getByAccountNumber() throws SQLException {
+    void getByNullClientId() throws SQLException { ////DO WE NEED THIS?????????????????????????????????????????
+        Bank_Account bank_accountTest=Bank_Account.getByClientId(conn, null);
+
+        assertNull(bank_accountTest);
+    }
+
+
+    @Test
+    @Order(2)  //Must run after we have successfully tested getByClientId function
+    void getByValidAccountNumber() throws SQLException {
         Bank_Account bank_accountTest;
         bank_accountTest = Bank_Account.getByAccountNumber
                 (conn, Bank_Account.getByClientId(conn, TestClient.getClientID()).getAccountNum());
@@ -67,25 +82,55 @@ class Bank_AccountTest {
 //        assertEquals("2025-04-15", bank_accountTest.getOpeningDate());
     }
 
-
     @Test
-    void updateBalance() {
+    void getByInvalidAccountNumber() throws SQLException {
+        Bank_Account bank_accountTest;
+        bank_accountTest = Bank_Account.getByAccountNumber
+                (conn, "0");
+
+        assertNull(bank_accountTest);
     }
 
     @Test
-    void testGetClientId() {
+    void getByNullAccountNumber() throws SQLException { ////DO WE NEED THIS????????????????????????????????
+        Bank_Account bank_accountTest;
+        bank_accountTest = Bank_Account.getByAccountNumber
+                (conn, null);
+
+        assertNull(bank_accountTest);
+    }
+
+
+    @Test
+    @Order(2) //Must run after we have successfully tested getByClientId function
+    void updateBalance() throws SQLException {
+        Bank_Account bank_accountTest=Bank_Account.getByClientId(conn, TestClient.getClientID());
+        Client SenderClient = Client.getById(conn, "10000");
+
+        assertEquals("0", bank_accountTest.getBalance());
+        SenderClient.transferMoney(conn, bank_accountTest.getAccountNum(), 100);
+        assertEquals("0", bank_accountTest.getBalance());
+        bank_accountTest.updateBalance(conn);
+        assertEquals("100", bank_accountTest.getBalance());
+
+        // Reset the balance back to original owner//////////
+
     }
 
     @Test
-    void closeAccount() { //Useless ahh funcion, delete it...................
+    void testGetClientId() throws SQLException {
     }
 
     @Test
-    void getCNIC() {
+    void closeAccount() throws SQLException { //Useless ahh funcion, delete it...................
     }
 
     @Test
-    void getByLoginId() {
+    void getCNIC() throws SQLException {
+    }
+
+    @Test
+    void getByLoginId() throws SQLException {
     }
 
     @AfterEach
