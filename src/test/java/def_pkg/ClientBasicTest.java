@@ -1,24 +1,25 @@
 package def_pkg;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-class ClientTest {
+class ClientBasicTest {
     private Connection conn;
-    Client c = new Client("Omar","Dardir", "Ahmed",
-            "Sameha", "30501300106716", "30,01,2005", "01025012367",
-            "omarahmed3001@gmail.com", "24, Doughnut St, City of Stars, La La Land");
+    private Client c;
 
     @BeforeEach
     void setUp() {
         conn = establishConnection();
+
+        c = new Client("Omar","Dardir", "Ahmed",
+                "Sameha", "30501300106716", "30,01,2005", "0978753",
+                "omarahmed3001@gmail.com", "24, Doughnut St, City of Stars, La La Land");
     }
 
     private Connection establishConnection() {
@@ -43,13 +44,14 @@ class ClientTest {
 
 
     @Test
+    @Order(1)
     void getById() throws SQLException {
         Client fetched = Client.getById(conn, "10001");
-        assertEquals("Beshee8", fetched.getFName());
-        assertEquals("Demorgan", fetched.getLName());
+        assertEquals("Mohammed", fetched.getFName());
+        assertEquals("Ahmed", fetched.getLName());
         assertEquals("Bashir", fetched.getFatherName());
-        assertEquals("Set el 7abayb", fetched.getMotherName());
-        assertEquals("305012600106744", fetched.getCNIC());
+        assertEquals("Mum", fetched.getMotherName());
+        assertEquals("0978912", fetched.getCNIC());
         assertEquals("2005-01-26", fetched.getDOB());
         assertEquals("01027827193", fetched.getPhone());
         assertEquals("Bashi8@gmail.com", fetched.getEmail());
@@ -57,6 +59,7 @@ class ClientTest {
 
     }
     @Test
+    @Order(2)
     void save() throws SQLException {
         c.save(conn);
         Client fetched = Client.getById(conn, c.getClientID());
@@ -66,26 +69,38 @@ class ClientTest {
         assertEquals("Sameha", fetched.getMotherName());
         assertEquals("30501300106716", fetched.getCNIC());
         assertEquals("2005-01-30", fetched.getDOB());
-        assertEquals("01025012367", fetched.getPhone());
+        assertEquals("0978753", fetched.getPhone());
         assertEquals("omarahmed3001@gmail.com", fetched.getEmail());
         assertEquals("24, Doughnut St, City of Stars, La La Land", fetched.getAddress());Client.getById(conn,c.getClientID());
-        // test 2
+
+
 
     }
 
     @Test
     void getAccNumByCNIC() throws SQLException {
-        assertEquals("500001", c.getAccNumByCNIC(conn,"305012600106744"));    }
+        assertEquals("500001", c.getAccNumByCNIC(conn,"0978912"));    }
 
     @Test
-    void getByCNIC() {
-
+    void getByCNIC() throws SQLException {
+        Client result = Client.getByCNIC(conn, "0978912");
+        assertEquals("Mohammed", result.getFName());
+        assertEquals("Ahmed", result.getLName());
+        assertEquals("Bashir", result.getFatherName());
+        assertEquals("Mum", result.getMotherName());
+        assertEquals("0978912", result.getCNIC());
+        assertEquals("2005-01-26", result.getDOB());
+        assertEquals("01027827193", result.getPhone());
+        assertEquals("Bashi8@gmail.com", result.getEmail());
+        assertEquals("In our hearts", result.getAddress());
     }
-
     @Test
-    void transferMoney() {
-
+    void getByInvalidCNICReturnsNull() throws SQLException {
+        Client result = Client.getByCNIC(conn, "123");
+        assertNull(result, "Expected null when CNIC does not exist in database");
     }
+
+
 
 
 
