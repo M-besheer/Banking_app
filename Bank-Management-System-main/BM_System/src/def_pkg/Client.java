@@ -59,7 +59,6 @@ public class Client {
 	}
 
 	public String getClientID() { return client_id; }
-
 	public String getFName() { return f_name; }
 	public String getLName() { return l_name; }
 	public String getFatherName() { return father_name; }

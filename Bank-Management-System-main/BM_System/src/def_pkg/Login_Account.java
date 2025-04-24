@@ -107,7 +107,7 @@ public class Login_Account {
 							}
 						} else {
 							// login_id is not null; account is already linked
-							System.out.println("DSDS");
+							System.out.println("Account is already linked!");
 							return -2;
 						}
 					}

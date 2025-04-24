@@ -67,15 +67,6 @@ public class Signup2Controller {
         String pass1 = passwordField.getText();
         String pass2 = confirmPasswordField.getText();
 
-        if (!pass1.equals(pass2)) {
-            bouncePanel(createPanel);
-            usererrorLabel.setVisible(true);
-            usererrorLabel.setText("Passwords do not match");
-            usererrorLabel.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-background-radius: 5;");
-            showError("Passwords do not match!");
-            return;
-        }
-
         if (strengthBar.getProgress() < 0.7) { // 70% strength threshold
             bouncePanel(createPanel);
             usererrorLabel.setVisible(true);
@@ -97,13 +88,16 @@ public class Signup2Controller {
 
             if (result == 0) {
                 showSuccess("Account created successfully!");
-
+                wait(1000);
                 openLoginForm();
-            } else {
+            }
+            else {
                 showError(getSignupError(result));
             }
         } catch (SQLException ex) {
             showError("Database error: " + ex.getMessage());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -132,7 +126,7 @@ public class Signup2Controller {
     private String getSignupError(int code) {
         return switch (code) {
             case -1 -> "Passwords mismatch";
-            case -4 -> "Weak password (use 8+ chars with mix of letters, numbers, symbols)";
+            case -2 -> "Account already exists!";
             default -> "Unknown error";
         };
     }
@@ -146,12 +140,16 @@ public class Signup2Controller {
     }
 
     private void showError(String message) {
-        // You can replace this with a proper JavaFX Alert dialog
-        System.err.println(message);
+        bouncePanel(createPanel);
+        usererrorLabel.setVisible(true);
+        usererrorLabel.setText(message);
+        usererrorLabel.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-background-radius: 5;");
     }
 
     private void showSuccess(String message) {
-        // You can replace this with a proper JavaFX Alert dialog
-        System.out.println(message);
+        bouncePanel(createPanel);
+        usererrorLabel.setVisible(true);
+        usererrorLabel.setText(message);
+        usererrorLabel.setStyle("-fx-text-fill: white; -fx-background-color: green; -fx-background-radius: 5;");
     }
 }
