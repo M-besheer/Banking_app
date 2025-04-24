@@ -3,6 +3,7 @@ package def_pkg;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Manager {
 	private String name;
@@ -63,33 +64,41 @@ public class Manager {
 		}
 	}
 
-	public int blockAccount(Connection conn, int accNum, String cnic) throws SQLException {
-		if (!verifyAccountOwnership(conn, accNum, cnic)) {
-			return -1; // CNIC doesn't match
+	public int blockAccount(Connection conn, Bank_Account acc, String cnic) throws SQLException {
+		if (!verifyAccountOwnership(conn, Integer.parseInt(acc.getAccountNum()), cnic)) {
+			return -1;
 		}
 
 		String sql = "UPDATE bank_account SET status = 2 WHERE acc_num = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, accNum);
+			pstmt.setInt(1, Integer.parseInt(acc.getAccountNum()));
 			int affected = pstmt.executeUpdate();
-			return affected > 0 ? 0 : -2; // -2 if no rows affected
+
+			if (affected > 0) {
+				acc.setStatus("2"); // directly update the same object
+			}
+			return affected > 0 ? 0 : -2;
 		}
 	}
 
-	public int unblockAccount(Connection conn, int accNum, String cnic) throws SQLException {
-		if (!verifyAccountOwnership(conn, accNum, cnic)) {
+	public int unblockAccount(Connection conn, Bank_Account acc, String cnic) throws SQLException {
+		if (!verifyAccountOwnership(conn, Integer.parseInt(acc.getAccountNum()), cnic)) {
 			return -1; // CNIC doesn't match
 		}
 
 		String sql = "UPDATE bank_account SET status = 1 WHERE acc_num = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, accNum);
+			pstmt.setInt(1, Integer.parseInt(acc.getAccountNum()));
 			int affected = pstmt.executeUpdate();
+
+			if (affected > 0) {
+				acc.setStatus("1");
+			}
 			return affected > 0 ? 0 : -2; // -2 if no rows affected
 		}
 	}
 
-	private boolean verifyAccountOwnership(Connection conn, int accNum, String cnic) throws SQLException {
+	boolean verifyAccountOwnership(Connection conn, int accNum, String cnic) throws SQLException {
 		String sql = "SELECT c.CNIC FROM client c "
 				+ "JOIN bank_account ba ON c.client_id = ba.client_id "
 				+ "WHERE ba.acc_num = ?";
@@ -128,9 +137,6 @@ public class Manager {
 		return null;
 	}
 
-	public Bank_Account getAccountInfo(Connection conn, String accNum) throws SQLException {
-		return Bank_Account.getByAccountNumber(conn, accNum);
-	}
 
 	public void updateClientInfo(Connection conn, String clientId, String phone,  String email, String address) throws SQLException {
 		String sql = "UPDATE client SET phone = ?, email = ?, address = ? WHERE client_id = ?";

@@ -66,6 +66,7 @@ public class Bank_Account {
 	public String getBalance() { return balance; }
 	public String getStatus() { return status; }
 	public String getOpeningDate() { return opening_date; }
+	public void setStatus(String status) { this.status = status; }
 
 	// Database operations
 	public static Bank_Account getByAccountNumber(Connection conn, String accountNum) throws SQLException {

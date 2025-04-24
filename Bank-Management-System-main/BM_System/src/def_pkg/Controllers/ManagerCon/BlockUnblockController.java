@@ -57,11 +57,11 @@ public class BlockUnblockController {
                  messagelabel.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-font-weight: bold; -fx-font-size: 18;");
                  return;
              }
-             Bank_Account acc = manager.getAccountInfo(conn,accnum);
+             Bank_Account acc = Bank_Account.getByAccountNumber(conn,accnum);
              String cnic = client.getCNIC();
              if("1".equals(acc.getStatus())){
                  if (action.equals("Block")) {
-                     manager.blockAccount(conn, Integer.parseInt(accnum),cnic);
+                     manager.blockAccount(conn, acc, cnic);
                      messagelabel.setText("Account blocked successfully!");
                      messagelabel.setStyle("-fx-text-fill: white; -fx-background-color: green; -fx-font-weight: bold; -fx-font-size: 18;");
 
@@ -79,7 +79,7 @@ public class BlockUnblockController {
 
                  }
                  else if (action.equals("Unblock")) {
-                     manager.unblockAccount(conn, Integer.parseInt(accnum),cnic);
+                     manager.unblockAccount(conn, acc, cnic);
                      messagelabel.setText("Account unblocked successfully!");
                      messagelabel.setStyle("-fx-text-fill: white; -fx-background-color: green; -fx-font-weight: bold; -fx-font-size: 18;");
 
