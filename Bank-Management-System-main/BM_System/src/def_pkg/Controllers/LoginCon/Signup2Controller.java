@@ -127,6 +127,7 @@ public class Signup2Controller {
         return switch (code) {
             case -1 -> "Passwords mismatch";
             case -2 -> "Account already exists!";
+
             default -> "Unknown error";
         };
     }
