@@ -32,15 +32,17 @@ class Login_AccountTest {
 
     private static Bank_Account bankAccount;
     private static Client client;
+    Manager manager;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws SQLException {
         // Setup test data
         client = new Client("50", "John", "Doe", "Michael", "Sarah",
-                "12345-6789012-3", "1990-01-01", "0123456789",
+                "12345-6789012-3", "1/1/2004", "0123456789",
                 "john@example.com", "123 Street");
+        manager = new Manager("sallam");
 
-        bankAccount = new Bank_Account("5", "9", "L001", "Saving",
+        bankAccount = new Bank_Account("5", "50", null, "Saving",
                 "1000", "Active", "2024-01-01");
     }
     @AfterAll
@@ -101,20 +103,25 @@ class Login_AccountTest {
 
     @DisplayName("signup with valid client accNm")
     @Test
-    void signUpSuccess() {
-        try {
+    void signUpSuccess() throws SQLException {
+//        try {
+            manager.createAccount(conn,client,"Saving");
+            Bank_Account acc = Bank_Account.getByClientId(conn,client.getClientID());
+
 
             String username = "d";
             String pass = "ass";
-            String accNum = "5"; // existing bank_account
+            assert acc != null;
+            String accNum = acc.getAccountNum(); // existing bank_account
 
+//            assert acc != null;
             int result = Login_Account.signUp(conn, username, pass, pass, accNum);
 
             // Assert success (0) for valid signup
             assertEquals(0, result, "Signup should succeed with a valid account number");
-        } catch (SQLException e) {
-            fail("SQLException occurred: " + e.getMessage());
-        }
+//        } catch (SQLException e) {
+//            fail("SQLException occurred: " + e.getMessage());
+//        }
     }
 
     @DisplayName("signup with already linked client accNm")
