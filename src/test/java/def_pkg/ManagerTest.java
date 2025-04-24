@@ -138,17 +138,7 @@ class ManagerTest {
         }
 
     }
-//    @Test
-//    void closeAccount() throws SQLException {
-//        manager.createAccount(conn, testClient, "Saving");
-//        String accNum = Client.getAccNumByCNIC(conn, testClient.getCNIC());
-//
-//        int closeResult = manager.closeAccount(conn, accNum, testClient.getCNIC());
-//        assertEquals(0, closeResult);
-//
-//        Bank_Account closedAcc = Bank_Account.getByAccountNumber(conn, accNum);
-//        assertEquals("0", closedAcc.getStatus());
-//    }
+
 
     @Nested
     @Order(5)
