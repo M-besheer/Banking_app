@@ -93,7 +93,7 @@ public class Client {
 		}
 	}
 
-	public static Client getById(Connection conn, String clientId) throws SQLException {
+	public static Client getById(Connection conn, String clientId) {
 		String sql = "SELECT * FROM client WHERE client_id = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, clientId);
@@ -113,9 +113,13 @@ public class Client {
 					);
 				}
 			}
+		} catch (SQLException e) {
+			System.err.println("SQL Error in getById: " + e.getMessage());
+
 		}
 		return null;
 	}
+
 
 	public int transferMoney(Connection conn, String recvAccNum, int amount) throws SQLException {
 		try {
