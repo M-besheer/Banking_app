@@ -137,6 +137,23 @@ class ManagerTest {
             assertEquals("1", acc.getStatus());
         }
 
+        @Test
+        @Order(3)
+        @DisplayName("unblock with miss matching cnic")
+        void unblockAccountWithWrongCNIC() throws SQLException {
+            manager.createAccount(conn, testClient, "Saving");
+            Bank_Account acc = Bank_Account.getByClientId(conn, testClient.getClientID());
+            assert acc != null;
+            int blockResult = manager.blockAccount(conn, acc, testClient.getCNIC());
+            assertEquals(0, blockResult);
+            assertEquals("2", acc.getStatus());
+
+            int unblockResult = manager.unblockAccount(conn, acc, testClient.getClientID());
+            assertEquals(-1, unblockResult);
+            assertEquals("2", acc.getStatus());
+
+        }
+
     }
 
 
@@ -194,9 +211,29 @@ class ManagerTest {
 
     @Test
     @Order(8)
-    void getTotalEmployees() {
+    void getTotalEmployees() throws SQLException {
         assertEquals(2, manager.getTotalEmployees(conn,manager));
     }
+
+    @Nested
+    @Order(9)
+    @DisplayName("White box testing")
+    class White_Box {
+        @Test
+        @Order(1)
+        @DisplayName("database connection cut in get total employees")
+        void closeConnection() throws SQLException {
+            assertThrows(SQLException.class, () -> {
+                conn.close();
+                manager.getTotalEmployees(conn,manager);
+            });
+        }
+
+
+
+    }
+
+
 
     @AfterEach
     void tearDown() throws SQLException {
