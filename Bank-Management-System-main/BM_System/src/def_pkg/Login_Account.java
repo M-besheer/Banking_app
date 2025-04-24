@@ -8,13 +8,6 @@ public class Login_Account {
 	private String password;
 	private String type;
 
-	public Login_Account() {
-		this.login_id = "";
-		this.username = "";
-		this.password = "";
-		this.type = "";
-	}
-
 	public Login_Account(String login_id, String username, String password, String type) {
 		this.login_id = login_id;
 		this.username = username;
@@ -37,8 +30,7 @@ public class Login_Account {
 				return "Client";
 			case "M":
 				return "Manager";
-			case "A":
-				return "Accountant";
+
 			default:
 				return "Unknown";
 		}

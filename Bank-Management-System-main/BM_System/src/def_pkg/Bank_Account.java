@@ -9,7 +9,7 @@ public class Bank_Account {
 	private String type;
 	private String balance;
 	private String status;
-	private String opening_date;
+	String opening_date;
 
 
 	public Bank_Account() {
