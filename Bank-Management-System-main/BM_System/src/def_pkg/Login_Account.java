@@ -104,8 +104,6 @@ public class Login_Account {
 
 	public static int signUp(Connection conn, String username, String pass1, String pass2, String accNum) throws SQLException {
 		if (!pass1.equals(pass2)) return -1;
-//		if (!checkPasswordStrength(pass1)) return -4;
-
 		try {
 			conn.setAutoCommit(false);
 
@@ -144,6 +142,7 @@ public class Login_Account {
 						else {
 							// login_id is not null; account is already linked
 							System.out.println("DSDS");
+							return -2;
 						}
 					}
 				}

@@ -1,14 +1,9 @@
 package def_pkg;
-
-
-import def_pkg.Login_Account;
 import org.junit.jupiter.api.*;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.sql.*;
+
 
 class Login_AccountTest {
 
@@ -34,13 +29,15 @@ class Login_AccountTest {
             conn.close();
         }
     }
-    //getters
+
+    @DisplayName("loginid getter")
     @Test
     void getLoginId() {
         Login_Account account = new Login_Account("123", "medhat", "pass", "C");
         assertEquals("123", account.getLoginId());
     }
 
+    @DisplayName("gettype getter")
     @Test
     void getType() {
         Login_Account client = new Login_Account("101", "client test", "pass", "C");
@@ -52,23 +49,67 @@ class Login_AccountTest {
         assertEquals("Unknown", unknown.getType());
     }
 
-    //signup
+
+
+    @DisplayName("signup with mismatched passwords")
     @Test
-    void signUp() {
+    void signUpFailPasswordMismatch() {
         try {
             String username = "medhat";
-            String pass = "pass";
-            String accNum = "500000"; //existing
+            String pass1 = "pass";
+            String pass2 = "different_pass"; // passwords do not match
+            String accNum = "500000"; // existing bank_account
 
-            int result = Login_Account.signUp(conn, username, pass, pass, accNum);
-            assertEquals(0, result);
+            int result = Login_Account.signUp(conn, username, pass1, pass2, accNum);
+
+            // Assert that the result is -1 when passwords do not match
+            assertEquals(-1, result, "Signup should fail when passwords do not match");
         } catch (SQLException e) {
             fail("SQLException occurred: " + e.getMessage());
         }
     }
 
 
-    //signin
+
+    @DisplayName("signup with valid client accNm")
+    @Test
+    void signUpSuccess() {
+        try {
+
+            String username = "medhat";
+            String pass = "pass";
+            String accNum = "500000"; // existing bank_account
+
+            int result = Login_Account.signUp(conn, username, pass, pass, accNum);
+
+            // Assert success (0) for valid signup
+            assertEquals(0, result, "Signup should succeed with a valid account number");
+        } catch (SQLException e) {
+            fail("SQLException occurred: " + e.getMessage());
+        }
+    }
+
+    @DisplayName("signup with already linked client accNm")
+    @Test
+    void signUpAccountAlreadyLinked() {
+        try {
+            String username = "medhat";
+            String pass = "pass";
+            String accNum = "500000"; // existing bank_account already linked to a login
+
+            int result = Login_Account.signUp(conn, username, pass, pass, accNum);
+
+            // Assert that the result is -2 when the account is already linked
+            assertEquals(-2, result, "Signup should fail if account is already linked to a login");
+        } catch (SQLException e) {
+            fail("SQLException occurred: " + e.getMessage());
+        }
+    }
+
+
+
+
+    @DisplayName("signin with non-existent account")
     @Test
     void signInFailure_no_account() {
         try {
@@ -81,6 +122,8 @@ class Login_AccountTest {
             fail("SQLException occurred: " + e.getMessage());
         }
     }
+
+    @DisplayName("signin with wrong password")
     @Test
     void signInFailure_wrong_password() {
         try {
@@ -94,7 +137,7 @@ class Login_AccountTest {
         }
     }
 
-
+    @DisplayName("signin with correct credentials")
     @Test
     void signInsuccess() {
         try {
@@ -106,7 +149,9 @@ class Login_AccountTest {
             fail("SQLException occurred: " + e.getMessage());
         }
     }
-    //verify
+
+
+    @DisplayName("verify AccountFailure wrong CNIC")
     @Test
     void verifyAccountFailure_wrongCNIC() {
         try {
@@ -120,6 +165,7 @@ class Login_AccountTest {
         }
     }
 
+    @DisplayName("verify AccountFailure wrong accNum")
     @Test
     void verifyAccountFailure_wrongACCnUM() {
         try {
@@ -132,7 +178,7 @@ class Login_AccountTest {
             fail("SQLException occurred: " + e.getMessage());
         }
     }
-
+    @DisplayName("verify AccountFailure wrong CNIC and accNum")
     @Test
     void verifyAccountFailure_both() {
         try {
@@ -147,21 +193,22 @@ class Login_AccountTest {
     }
 
 
+    @DisplayName("verify Account Success")
     @Test
     void verifyAccount_success() {
         try {
-            boolean result = Login_Account.verifyAccount(conn, "500000", "67153-7853257-8");
+            boolean result = Login_Account.verifyAccount(conn, "500000", "67153-7853257-8");////exisiting client
             assertTrue(result); // assuming correct data
         } catch (SQLException e) {
             fail("SQLException occurred: " + e.getMessage());
         }
     }
 
-    //get employee
+    @DisplayName("Get employee name Success")
     @Test
     void getEmployeeNameSuccess() {
         try {
-            String loginId = "60000"; // Provide an existing login_id from the employee table
+            String loginId = "60000"; //  existing login_id from the employee table
             String name = Login_Account.getEmployeeName(conn, loginId);
             assertNotNull(name);
             assertFalse(name.isEmpty());
@@ -169,6 +216,8 @@ class Login_AccountTest {
             fail("SQLException occurred: " + e.getMessage());
         }
     }
+
+    @DisplayName("Get employee name failure invalid loginid")
     @Test
     void getEmployeeNameFailure() {
         try {
