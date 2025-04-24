@@ -15,18 +15,18 @@ public class Manager {
 	public Manager(String name) {
 		this.name = name;
 	}
-	private Connection establishConnection() {
-		String url = "jdbc:mysql://localhost:3306/bank_schema";
-		String username = "root";
-		String password = "";
-		try {
-			Connection connection = DriverManager.getConnection(url, username, password);
-			System.out.println("Connection established successfully!");
-			return connection;
-		} catch (SQLException e) {
-			throw new IllegalStateException("Unable to connect to the database. " + e.getMessage());
-		}
-	}
+//	private Connection establishConnection() {
+//		String url = "jdbc:mysql://localhost:3306/bank_schema";
+//		String username = "root";
+//		String password = "";
+//		try {
+//			Connection connection = DriverManager.getConnection(url, username, password);
+//			System.out.println("Connection established successfully!");
+//			return connection;
+//		} catch (SQLException e) {
+//			throw new IllegalStateException("Unable to connect to the database. " + e.getMessage());
+//		}
+//	}
 	public String getName() {
 		return this.name;
 	}
@@ -163,7 +163,7 @@ public class Manager {
 	}
 
 
-	public int getTotalEmployees(Connection conn,Manager manager) {
+	public int getTotalEmployees(Connection conn,Manager manager) throws SQLException {
 		String sql = "SELECT COUNT(*) AS total_employees FROM employee";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql);
 			 ResultSet rs = pstmt.executeQuery()) {
