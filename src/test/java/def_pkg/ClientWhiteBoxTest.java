@@ -66,6 +66,14 @@ public class ClientWhiteBoxTest {
 
     }
     @Test
+    void getByIdSQLException() throws SQLException {
+        conn.close(); // Force connection to be invalid
+
+        Client result = Client.getById(conn, "766767");
+
+        assertNull(result); // Since the method catches SQLException and returns null
+    }
+    @Test
     @Order(2)
     void save() throws SQLException {
         c.save(conn);
