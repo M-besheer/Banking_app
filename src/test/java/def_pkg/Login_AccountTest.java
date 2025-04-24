@@ -46,10 +46,23 @@ class Login_AccountTest {
                 "1000", "Active", "2024-01-01");
     }
     @AfterAll
-    public static void tearDown() {
+    public static void tearDown() throws SQLException {
         // Clean up references
         bankAccount = null;
         client = null;
+
+
+        String sql = "DELETE FROM bank_account where client_id=?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, client.getClientID());
+            pstmt.executeUpdate();
+        }
+        String sql2 = "DELETE FROM client where client_id=?";
+        try (PreparedStatement pstmt2 = conn.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt2.setString(1, client.getClientID());
+            pstmt2.executeUpdate();
+        }
+
     }
 
     @Test
@@ -114,7 +127,6 @@ class Login_AccountTest {
             assert acc != null;
             String accNum = acc.getAccountNum(); // existing bank_account
 
-//            assert acc != null;
             int result = Login_Account.signUp(conn, username, pass, pass, accNum);
 
             // Assert success (0) for valid signup
