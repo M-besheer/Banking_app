@@ -49,7 +49,7 @@ public class LoginController {
                 String userType = loggedInUser.getType();
                 switch(userType) {
                     case "Client":
-                        Bank_Account account = Bank_Account.getByLoginId(conn, Integer.parseInt(loggedInUser.getLoginId()));
+                        Bank_Account account = Bank_Account.getByLoginId(conn, loggedInUser.getLoginId());
                         System.out.println("Searching for login ID: " + loggedInUser.getLoginId());
                         Client client = Client.getById(conn, account.getClientId());
                         if ("1".equals(account.getStatus())) {
