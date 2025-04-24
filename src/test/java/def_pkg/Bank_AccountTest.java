@@ -37,8 +37,6 @@ class Bank_AccountTest {
     @Test
     @Order(1)
     void getByValidClientId() throws SQLException {
-//        String clientID= TestClient.getClientID();
-//        System.out.println("Client ID: " + clientID);
         Bank_Account bank_accountTest=Bank_Account.getByClientId(conn, TestClient.getClientID());
 
         assertEquals(Bank_Account.getByClientId(conn, TestClient.getClientID()).getAccountNum(),
@@ -48,7 +46,6 @@ class Bank_AccountTest {
         assertEquals("Current", bank_accountTest.getType());
         assertEquals("0", bank_accountTest.getBalance());
         assertEquals("1", bank_accountTest.getStatus());
-//        assertEquals("2025-04-15", bank_accountTest.getOpeningDate());
     }
 
     @Test
@@ -80,7 +77,6 @@ class Bank_AccountTest {
         assertEquals("Current", bank_accountTest.getType());
         assertEquals("0", bank_accountTest.getBalance());
         assertEquals("1", bank_accountTest.getStatus());
-//        assertEquals("2025-04-15", bank_accountTest.getOpeningDate());
     }
 
     @Test
@@ -120,7 +116,7 @@ class Bank_AccountTest {
 
     @Test
     @Order(2) //Must run after we have successfully tested getByClientId function
-    void getByLoginId() throws SQLException {
+    void getByValidLoginId() throws SQLException {
         Bank_Account bank_accountTest;
         bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
         Login_Account.signUp(conn, "TestUser", "TestPass", "TestPass", bank_accountTest.getAccountNum());
@@ -134,7 +130,18 @@ class Bank_AccountTest {
         assertEquals("Current", bank_accountTest.getType());
         assertEquals("0", bank_accountTest.getBalance());
         assertEquals("1", bank_accountTest.getStatus());
-//        assertEquals("2025-04-15", bank_accountTest.getOpeningDate());
+    }
+
+    @Test
+    @Order(2) //Must run after we have successfully tested getByClientId function
+    void getByInvalidLoginId() throws SQLException {
+        Bank_Account bank_accountTest;
+        bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
+        Login_Account.signUp(conn, "TestUser", "TestPass", "TestPass", bank_accountTest.getAccountNum());
+        bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
+        bank_accountTest=Bank_Account.getByLoginId(conn, "0");
+
+        assertNull(bank_accountTest);
     }
 
     @AfterEach
