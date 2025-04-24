@@ -104,8 +104,8 @@ class Login_AccountTest {
     void signUpSuccess() {
         try {
 
-            String username = "medhat";
-            String pass = "pass";
+            String username = "d";
+            String pass = "ass";
             String accNum = "5"; // existing bank_account
 
             int result = Login_Account.signUp(conn, username, pass, pass, accNum);
@@ -168,9 +168,9 @@ class Login_AccountTest {
     void signInsuccess() {
         try {
 
-            Login_Account account = Login_Account.signIn(conn, "medhat", "pass");
+            Login_Account account = Login_Account.signIn(conn, "Mohamed", "11");/////////exist in database
             assertNotNull(account);
-            assertEquals("medhat", account.getUsername());  // Ensure ID or Username
+            assertEquals("Mohamed", account.getUsername());  // Ensure ID or Username
         } catch (SQLException e) {
             fail("SQLException occurred: " + e.getMessage());
         }
