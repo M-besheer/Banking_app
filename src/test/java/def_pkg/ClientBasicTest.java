@@ -108,4 +108,10 @@ class ClientBasicTest {
         Client result = Client.getByCNIC(conn, "123");
         assertNull(result, "Expected null when CNIC does not exist in database");
     }
+    @AfterAll
+    static void cleanUp() throws SQLException {
+
+
+    }
+
 }
