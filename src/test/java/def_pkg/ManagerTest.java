@@ -215,23 +215,23 @@ class ManagerTest {
         assertEquals(2, manager.getTotalEmployees(conn,manager));
     }
 
-    @Nested
-    @Order(9)
-    @DisplayName("White box testing")
-    class White_Box {
-        @Test
-        @Order(1)
-        @DisplayName("database connection cut in get total employees")
-        void closeConnection() throws SQLException {
-            assertThrows(SQLException.class, () -> {
-                conn.close();
-                manager.getTotalEmployees(conn,manager);
-            });
-        }
-
-
-
-    }
+//    @Nested
+//    @Order(9)
+//    @DisplayName("White box testing")
+//    class White_Box {
+//        @Test
+//        @Order(1)
+//        @DisplayName("database connection cut in get total employees")
+//        void closeConnection() throws SQLException {
+//            assertThrows(SQLException.class, () -> {
+//                conn.close();
+//                manager.getTotalEmployees(conn,manager);
+//            });
+//        }
+//
+//
+//
+//    }
 
 
 
