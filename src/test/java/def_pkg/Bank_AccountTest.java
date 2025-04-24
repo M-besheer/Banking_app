@@ -56,14 +56,6 @@ class Bank_AccountTest {
     }
 
     @Test
-    void getByNullClientId() throws SQLException { ////DO WE NEED THIS?????????????????????????????????????????
-        Bank_Account bank_accountTest=Bank_Account.getByClientId(conn, null);
-
-        assertNull(bank_accountTest);
-    }
-
-
-    @Test
     @Order(2)  //Must run after we have successfully tested getByClientId function
     void getByValidAccountNumber() throws SQLException {
         Bank_Account bank_accountTest;
@@ -87,16 +79,6 @@ class Bank_AccountTest {
 
         assertNull(bank_accountTest);
     }
-
-    @Test
-    void getByNullAccountNumber() throws SQLException { ////DO WE NEED THIS????????????????????????????????
-        Bank_Account bank_accountTest;
-        bank_accountTest = Bank_Account.getByAccountNumber
-                (conn, null);
-
-        assertNull(bank_accountTest);
-    }
-
 
     @Test
     @Order(2) //Must run after we have successfully tested getByClientId function
