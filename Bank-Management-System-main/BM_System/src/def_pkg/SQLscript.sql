@@ -70,7 +70,7 @@ ALTER TABLE bank_schema.bank_account AUTO_INCREMENT=500000;
 
 -- employees
 Insert into bank_schema.employee values(NULL, "Abdelrahman", "Sallam", "Mostafa", "Mum", "Manager", "0129908336", "abdo@gmail.com", NULL );
-Insert into bank_schema.employee values(NULL, "Roger", "Salama", "Sherif", "Mum", "Accountant", "01062494318", "roger@gmail.com", NULL );
+Insert into bank_schema.employee values(NULL, "Roger", "Salama", "Sherif", "Mum", "Manager", "01062494318", "roger@gmail.com", NULL );
 
 -- clients
 Insert Into bank_schema.client Values(NULL, "Omar", "Daradir", "Ahmed", "Mum", "7853257", STR_TO_DATE("30,1,2005", "%d,%m,%Y"), "01002345631", "GarGar@gmail.com", "24 Donught st. City of stars, La La Land");
@@ -84,7 +84,7 @@ Insert Into bank_schema.bank_account Values(NULL, 10002, NULL,"Saving", 7000, 1,
 
 -- login account
 Insert into bank_schema.login_account values (NULL, "Abdelrahman20", "Sallam", 'M');
-Insert into bank_schema.login_account values (NULL, "rogerthat", "Salama", 'A');
+Insert into bank_schema.login_account values (NULL, "rogerthat", "Salama", 'M');
 Insert into bank_schema.login_account values (NULL, "tomz", "Dardir", 'C');
 Insert into bank_schema.login_account values (NULL, "besho", "Besheer", 'C');
 Insert into bank_schema.login_account values (NULL, "ashroof", "Ashraf", 'C');
