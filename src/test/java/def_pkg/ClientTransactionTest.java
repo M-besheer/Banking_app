@@ -87,6 +87,13 @@ public class ClientTransactionTest {
             Bank_Account client_Acc = Bank_Account.getByAccountNumber(conn, "500001");
             assertEquals(21000, Integer.parseInt(client_Acc.getBalance()));
         }
+        @Test
+        void testSQLExceptionRollback() {
+            assertThrows(SQLException.class, () -> {
+                conn.close(); // forcibly close to cause SQLException
+                c.depositMoney(conn, "500002", 100);
+            });
+        }
     }
 
 
@@ -138,6 +145,13 @@ public class ClientTransactionTest {
             assertEquals(3, result);
             Bank_Account updatedAccount = Bank_Account.getByAccountNumber(conn, "500001");
             assertEquals(20000, Double.parseDouble(updatedAccount.getBalance()));
+        }
+        @Test
+        void testSQLExceptionRollback() {
+            assertThrows(SQLException.class, () -> {
+                conn.close(); // forcibly close to cause SQLException
+                c.WithdrawMoney(conn, "500002", 100);
+            });
         }
     }
     @Nested
@@ -198,11 +212,13 @@ public class ClientTransactionTest {
 
 
         }
-
-
-
-
-
+        @Test
+        void testSQLExceptionRollback() {
+            assertThrows(SQLException.class, () -> {
+                conn.close(); // forcibly close to cause SQLException
+                c.transferMoney(conn, "500002", 100);
+            });
+        }
 
 
     }

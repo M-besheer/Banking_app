@@ -86,6 +86,9 @@ class ClientBasicTest {
     @Test
     void getAccNumByCNIC() throws SQLException {
         assertEquals("500001", c.getAccNumByCNIC(conn,"0978912"));    }
+    @Test
+    void getAccNumByWrongCNIC() throws SQLException {
+        assertEquals("", c.getAccNumByCNIC(conn,"0978912222"));    }
 
     @Test
     void getByCNIC() throws SQLException {

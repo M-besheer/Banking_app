@@ -30,8 +30,8 @@ class Login_AccountTest {
         }
     }
 
-    private Bank_Account bankAccount;
-    private Client client;
+    private static Bank_Account bankAccount;
+    private static Client client;
 
     @BeforeEach
     public void setUp() {
@@ -43,8 +43,8 @@ class Login_AccountTest {
         bankAccount = new Bank_Account("5", "9", "L001", "Saving",
                 "1000", "Active", "2024-01-01");
     }
-    @AfterEach
-    public void tearDown() {
+    @AfterAll
+    public static void tearDown() {
         // Clean up references
         bankAccount = null;
         client = null;
@@ -223,7 +223,7 @@ class Login_AccountTest {
     @Test
     void verifyAccount_success() {
         try {
-            boolean result = Login_Account.verifyAccount(conn, "500000", "67153-7853257-8");////exisiting client
+            boolean result = Login_Account.verifyAccount(conn, "500000", "7853257");
             assertTrue(result); // assuming correct data
         } catch (SQLException e) {
             fail("SQLException occurred: " + e.getMessage());
