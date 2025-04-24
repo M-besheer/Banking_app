@@ -132,6 +132,12 @@ class Login_AccountTest {
             pstmt2.setString(1, client.getClientID());
             pstmt2.executeUpdate();
         }
+        String sql3 = "DELETE FROM login_account where username=?";
+        try (PreparedStatement pstmt3 = conn.prepareStatement(sql3, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt3.setString(1, username);
+            pstmt3.executeUpdate();
+        }
+
     }
 
     @DisplayName("signup with already linked client accNm")
