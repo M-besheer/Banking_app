@@ -70,28 +70,29 @@ ALTER TABLE bank_schema.bank_account AUTO_INCREMENT=500000;
 
 -- employees
 Insert into bank_schema.employee values(NULL, "Abdelrahman", "Sallam", "Mostafa", "Mum", "Manager", "0129908336", "abdo@gmail.com", NULL );
-Insert into bank_schema.employee values(NULL, "Roger", "Salama", "Sherif", "Mum", "Accountant", "01062494318", "roger@gmail.com", NULL );
 
 -- clients
 Insert Into bank_schema.client Values(NULL, "Omar", "Daradir", "Ahmed", "Mum", "7853257", STR_TO_DATE("30,1,2005", "%d,%m,%Y"), "01002345631", "GarGar@gmail.com", "24 Donught st. City of stars, La La Land");
 Insert Into bank_schema.client Values(NULL, "Mohammed", "Ahmed", "Bashir", "Mum", "0978912", STR_TO_DATE("26,1,2005", "%d,%m,%Y"), "01027827193", "Bashi8@gmail.com", "In our hearts");
 Insert Into bank_schema.client Values(NULL, "Mohammed", "Ashraf", "Ashraf", "Mamy", "7809821", STR_TO_DATE("19,8,2004", "%d,%m,%Y"), "03665132497", "Ashareefo@gmail.com", "Fe 3eyonna");
+Insert Into bank_schema.client Values(NULL, "Roger", "Salama", "Sherif", "Mum", "0987456231", STR_TO_DATE("7,2,2004", "%d,%m,%Y"), "01002346789", "rogrog@gmail.com", "Fe 2olobna");
 
 -- bank accounts
 Insert Into bank_schema.bank_account Values(NULL, 10000, NULL,"Current", 1000, 1, CURDATE());
 Insert Into bank_schema.bank_account Values(NULL, 10001, NULL,"Current", 20000, 1, CURDATE());
 Insert Into bank_schema.bank_account Values(NULL, 10002, NULL,"Saving", 7000, 1, CURDATE());
+Insert Into bank_schema.bank_account Values(NULL, 10003, NULL,"Saving", 7000, 1, CURDATE());
 
 -- login account
 Insert into bank_schema.login_account values (NULL, "Abdelrahman20", "Sallam", 'M');
-Insert into bank_schema.login_account values (NULL, "rogerthat", "Salama", 'A');
-Insert into bank_schema.login_account values (NULL, "tomz", "Dardir", 'C');
-Insert into bank_schema.login_account values (NULL, "besho", "Besheer", 'C');
-Insert into bank_schema.login_account values (NULL, "ashroof", "Ashraf", 'C');
+Insert into bank_schema.login_account values (NULL, "OmarDardir", "Dardir", 'C');
+Insert into bank_schema.login_account values (NULL, "Mbesheer", "Besheer", 'C');
+Insert into bank_schema.login_account values (NULL, "MohAshraf", "Ashraf", 'C');
+Insert into bank_schema.login_account values (NULL, "RogerSherif", "Salama", 'C');
 
 
 update bank_schema.employee set login_id = 60000 where employee_id = 20000;
-update bank_schema.employee set login_id = 60001 where employee_id = 20001;
-update bank_schema.bank_account set login_id = 60002 where acc_num = 500000;
-update bank_schema.bank_account set login_id = 60003 where acc_num = 500001;
-update bank_schema.bank_account set login_id = 60004 where acc_num = 500002;
+update bank_schema.bank_account set login_id = 60001 where acc_num = 500000;
+update bank_schema.bank_account set login_id = 60002 where acc_num = 500001;
+update bank_schema.bank_account set login_id = 60003 where acc_num = 500002;
+update bank_schema.bank_account set login_id = 60004 where acc_num = 500003;
