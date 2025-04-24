@@ -21,27 +21,26 @@ public class Login_Account {
 		this.password = password;
 		this.type = type;
 	}
-	private Connection establishConnection() {
-		String url = "jdbc:mysql://localhost:3306/bank_schema";
-		String username = "root";
-		String password = "";
-		try {
-			Connection connection = DriverManager.getConnection(url, username, password);
-			System.out.println("Connection established successfully!");
-			return connection;
-		} catch (SQLException e) {
-			throw new IllegalStateException("Unable to connect to the database. " + e.getMessage());
-		}
-	}
+
 	// Getters
-	public String getLoginId() { return login_id; }
-	public String getUsername() { return username; }
+	public String getLoginId() {
+		return login_id;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
 	public String getType() {
-		switch(type.toUpperCase()) {
-			case "C": return "Client";
-			case "M": return "Manager";
-			case "A": return "Accountant";
-			default: return "Unknown";
+		switch (type.toUpperCase()) {
+			case "C":
+				return "Client";
+			case "M":
+				return "Manager";
+			case "A":
+				return "Accountant";
+			default:
+				return "Unknown";
 		}
 	}
 
@@ -64,30 +63,6 @@ public class Login_Account {
 		}
 		return null;
 	}
-
-
-
-//	public static Login_Account signIn1(Connection conn, String login_id, String password) throws SQLException {
-//		String sql = "SELECT username, type FROM login_account WHERE login_id = ? AND password = ?";
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//			pstmt.setString(1, login_id);
-//			pstmt.setString(2, password);
-//			try (ResultSet rs = pstmt.executeQuery()) {
-//				if (rs.next()) {
-//					return new Login_Account(
-//							rs.getString("login_id"),
-//							login_id,
-//							"", // Empty password for security
-//							rs.getString("type")
-//					);
-//				}
-//			}
-//		}
-//		return null;
-//	}
-
-
-
 
 
 	public static boolean verifyAccount(Connection conn, String accNum, String cnic) throws SQLException {
@@ -138,8 +113,7 @@ public class Login_Account {
 									}
 								}
 							}
-						}
-						else {
+						} else {
 							// login_id is not null; account is already linked
 							System.out.println("DSDS");
 							return -2;
@@ -157,21 +131,6 @@ public class Login_Account {
 		}
 	}
 
-	// Password management
-//	public static void changePassword(Connection conn, int loginId, String newPassword) throws SQLException {
-//		String sql = "UPDATE login_account SET password = ? WHERE login_id = ?";
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//			pstmt.setString(1, newPassword);
-//			pstmt.setInt(2, loginId);
-//			pstmt.executeUpdate();
-//		}
-//	}
-
-//	public static boolean checkPasswordStrength(String password) {
-//		// At least 8 chars, contains digit, uppercase, lowercase, and special char
-//		String pattern = "[0-9]";
-//		return Pattern.compile(pattern).matcher(password).matches();
-//	}
 
 	// User information
 	public static String getEmployeeName(Connection conn, String loginId) throws SQLException {
@@ -187,21 +146,5 @@ public class Login_Account {
 		return "";
 	}
 
-	public static Login_Account getByUsername(Connection conn, String username) throws SQLException {
-		String sql = "SELECT login_id, type FROM login_account WHERE username = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, username);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				if (rs.next()) {
-					return new Login_Account(
-							rs.getString("login_id"),
-							username,
-							"", // Empty password for security
-							rs.getString("type")
-					);
-				}
-			}
-		}
-		return null;
-	}
+
 }
