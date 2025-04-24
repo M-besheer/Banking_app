@@ -30,6 +30,34 @@ class Login_AccountTest {
         }
     }
 
+    private Bank_Account bankAccount;
+    private Client client;
+
+    @BeforeEach
+    public void setUp() {
+        // Setup test data
+        client = new Client("50", "John", "Doe", "Michael", "Sarah",
+                "12345-6789012-3", "1990-01-01", "0123456789",
+                "john@example.com", "123 Street");
+
+        bankAccount = new Bank_Account("5", "9", "L001", "Saving",
+                "1000", "Active", "2024-01-01");
+    }
+    @AfterEach
+    public void tearDown() {
+        // Clean up references
+        bankAccount = null;
+        client = null;
+    }
+
+    @Test
+    public void testAccountCreation() {
+        // Sample test case
+        assert bankAccount != null;
+    }
+
+
+
     @DisplayName("loginid getter")
     @Test
     void getLoginId() {
@@ -58,7 +86,7 @@ class Login_AccountTest {
             String username = "medhat";
             String pass1 = "pass";
             String pass2 = "different_pass"; // passwords do not match
-            String accNum = "500000"; // existing bank_account
+            String accNum = "5"; // existing bank_account
 
             int result = Login_Account.signUp(conn, username, pass1, pass2, accNum);
 
@@ -78,7 +106,7 @@ class Login_AccountTest {
 
             String username = "medhat";
             String pass = "pass";
-            String accNum = "500000"; // existing bank_account
+            String accNum = "5"; // existing bank_account
 
             int result = Login_Account.signUp(conn, username, pass, pass, accNum);
 
