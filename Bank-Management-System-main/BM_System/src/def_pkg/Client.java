@@ -57,20 +57,7 @@ public class Client {
 		this.email = email;
 		this.address = address;
 	}
-	private Connection establishConnection() {
-		String url = "jdbc:mysql://localhost:3306/bank_schema";
-		String username = "root";
-		String password = "";
-		try {
-			Connection connection = DriverManager.getConnection(url, username, password);
-			System.out.println("Connection established successfully!");
-			return connection;
-		} catch (SQLException e) {
-			throw new IllegalStateException("Unable to connect to the database. " + e.getMessage());
-		}
-	}
 
-	// Getters
 	public String getClientID() { return client_id; }
 
 	public String getFName() { return f_name; }
@@ -83,7 +70,7 @@ public class Client {
 	public String getEmail() { return email; }
 	public String getAddress() { return address; }
 
-	// Database operations
+
 	public void save(Connection conn) throws SQLException {
 		String sql = "INSERT INTO client (f_name, l_name, father_name, mother_name, CNIC, DOB, phone, email, address) "
 				+ "VALUES (?, ?, ?, ?, ?, STR_TO_DATE(?, '%d/%m/%Y'), ?, ?, ?)";
@@ -130,17 +117,6 @@ public class Client {
 		}
 		return null;
 	}
-
-//	public void update(Connection conn) throws SQLException {
-//		String sql = "UPDATE client SET phone = ?, email = ?, address = ? WHERE client_id = ?";
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//			pstmt.setString(1, phone);
-//			pstmt.setString(2, email);
-//			pstmt.setString(3, address);
-//			pstmt.setString(4, client_id);
-//			pstmt.executeUpdate();
-//		}
-//	}
 
 	public int transferMoney(Connection conn, String recvAccNum, int amount) throws SQLException {
 		try {
@@ -289,18 +265,6 @@ public class Client {
 			}
 		}
 		return null;
-	}
-
-	public void showClientInfo() {
-		System.out.println("First Name: " + f_name);
-		System.out.println("Last Name: " + l_name);
-		System.out.println("Father Name: " + father_name);
-		System.out.println("Mother Name: " + mother_name);
-		System.out.println("CNIC: " + CNIC);
-		System.out.println("DOB: " + DOB);
-		System.out.println("Phone: " + phone);
-		System.out.println("Email: " + email);
-		System.out.println("Address: " + address);
 	}
 
 

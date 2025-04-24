@@ -59,6 +59,12 @@ class ClientBasicTest {
 
     }
     @Test
+    void getByWrongId() throws SQLException {
+        Client fetched = Client.getById(conn,"766767");
+        assertNull(fetched);
+
+    }
+    @Test
     @Order(2)
     void save() throws SQLException {
         c.save(conn);
