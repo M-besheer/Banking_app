@@ -16,23 +16,13 @@ public class Login_Account {
 	}
 
 	// Getters
-	public String getLoginId() {
-		return login_id;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
+	public String getLoginId() { return login_id; }
+	public String getUsername() { return username; }
 	public String getType() {
-		switch (type.toUpperCase()) {
-			case "C":
-				return "Client";
-			case "M":
-				return "Manager";
-
-			default:
-				return "Unknown";
+		switch(type.toUpperCase()) {
+			case "C": return "Client";
+			case "M": return "Manager";
+			default: return "Unknown";
 		}
 	}
 
@@ -107,7 +97,7 @@ public class Login_Account {
 							}
 						} else {
 							// login_id is not null; account is already linked
-							System.out.println("Account is already linked!");
+							System.out.println("DSDS");
 							return -2;
 						}
 					}
@@ -138,5 +128,21 @@ public class Login_Account {
 		return "";
 	}
 
-
+	public static Login_Account getByUsername(Connection conn, String username) throws SQLException {
+		String sql = "SELECT login_id, type FROM login_account WHERE username = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, username);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return new Login_Account(
+							rs.getString("login_id"),
+							username,
+							"", // Empty password for security
+							rs.getString("type")
+					);
+				}
+			}
+		}
+		return null;
+	}
 }

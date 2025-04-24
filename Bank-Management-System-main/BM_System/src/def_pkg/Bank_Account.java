@@ -9,7 +9,7 @@ public class Bank_Account {
 	private String type;
 	private String balance;
 	private String status;
-	String opening_date;
+	private String opening_date;
 
 
 	public Bank_Account() {
@@ -42,8 +42,16 @@ public class Bank_Account {
 	}
 	@Override
 	public String toString() {
-		return String.format("Account Number: %s\nType: %s\nBalance: %s\nStatus: %s\nOpening Date: %s",
-				acc_num, type, balance, status, opening_date);
+		return String.format(
+				"Account Number: %s%n" +
+						"Client ID: %s%n" +
+						"Login ID: %s%n" +
+						"Type: %s%n" +
+						"Balance: %s%n" +
+						"Status: %s%n" +
+						"Opening Date: %s",
+				acc_num, client_id, login_id, type, balance, status, opening_date
+		);
 	}
 
 	private Connection establishConnection() {
@@ -124,31 +132,10 @@ public class Bank_Account {
 		}
 	}
 
-	public static int getClientId(Connection conn, int accNum) throws SQLException {
-		String sql = "SELECT client_id FROM bank_account WHERE acc_num = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, accNum);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				return rs.next() ? rs.getInt("client_id") : -1;
-			}
-		}
-	}
-
-
-	public static String getCNIC(Connection conn, int clientId) throws SQLException {
-		String sql = "SELECT CNIC FROM client WHERE client_id = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, clientId);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				return rs.next() ? rs.getString("CNIC") : "";
-			}
-		}
-	}
-
-	public static Bank_Account getByLoginId(Connection conn, int loginId) throws SQLException {
+	public static Bank_Account getByLoginId(Connection conn, String loginId) throws SQLException {
 		String sql = "SELECT * FROM bank_account WHERE login_id = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, loginId);
+			pstmt.setString(1, loginId);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
 					// Construct a Bank_Account object from the row
