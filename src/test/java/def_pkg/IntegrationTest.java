@@ -61,6 +61,7 @@ public class IntegrationTest {
         if (conn != null && !conn.isClosed()) {
             conn.close();
         }
+
     }
     //scenario 1
     @Test
