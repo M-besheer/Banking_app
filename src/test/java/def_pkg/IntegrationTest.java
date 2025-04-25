@@ -62,5 +62,17 @@ public class IntegrationTest {
         Bank_Account fetchBankAccount = Bank_Account.getByClientId(conn,fetchClient.getClientID());
 
         assertTrue(manager.verifyAccountOwnership(conn,Integer.parseInt(fetchBankAccount.getAccountNum()),"30501316106716"));
+
+        Login_Account.signUp(conn, "besela", "dodo", "dodo", fetchBankAccount.getAccountNum());
+
+        // scenariooo 2
+        Login_Account Login = Login_Account.signIn(conn, "besela", "dodo");
+        assertEquals("besela", Login.getUsername());
+        client1.depositMoney(conn,fetchBankAccount.getAccountNum(),2000);
+        client1.transferMoney(conn,"500000",500);
+
+
     }
+
 }
+

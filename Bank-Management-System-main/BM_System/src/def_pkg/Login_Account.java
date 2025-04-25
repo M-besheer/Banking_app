@@ -15,6 +15,7 @@ public class Login_Account {
 		this.type = type;
 	}
 
+
 	// Getters
 	public String getLoginId() { return login_id; }
 	public String getUsername() { return username; }
@@ -38,11 +39,8 @@ public class Login_Account {
 							rs.getString("login_id"),
 							username,
 							"", // Empty password for security
-							rs.getString("type")
-					);
-				}
-			}
-		}
+							rs.getString("type"));
+				}}}
 		return null;
 	}
 
@@ -79,22 +77,7 @@ public class Login_Account {
 							try (PreparedStatement pstmt2 = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 								pstmt2.setString(1, username);
 								pstmt2.setString(2, pass1);
-								pstmt2.executeUpdate();
-
-								// Corrected: use pstmt2 to get the generated keys
-								try (ResultSet rs2 = pstmt2.getGeneratedKeys()) {
-									if (rs2.next()) {
-										int loginId = rs2.getInt(1);
-										// Link to bank account
-										String updateSql = "UPDATE bank_account SET login_id = ? WHERE acc_num = ?";
-										try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
-											updateStmt.setInt(1, loginId);
-											updateStmt.setString(2, accNum);
-											updateStmt.executeUpdate();
-										}
-									}
-								}
-							}
+								pstmt2.executeUpdate();}
 						} else {
 							// login_id is not null; account is already linked
 							System.out.println("DSDS");

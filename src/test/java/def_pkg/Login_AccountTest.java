@@ -37,7 +37,7 @@ class Login_AccountTest {
     @BeforeEach
     public void setUp() throws SQLException {
         // Setup test data
-        client = new Client("John", "Doe", "Michael", "Sarah",
+        client = new Client("50", "John", "Doe", "Michael", "Sarah",
                 "12345-6789012-3", "1/1/2004", "0123456789",
                 "john@example.com", "123 Street");
         manager = new Manager("sallam");
@@ -45,13 +45,23 @@ class Login_AccountTest {
         bankAccount = new Bank_Account("5", "50", null, "Saving",
                 "1000", "Active", "2024-01-01");
     }
-
-
     @AfterAll
     public static void tearDown() throws SQLException {
         // Clean up references
         bankAccount = null;
         client = null;
+
+
+        String sql = "DELETE FROM bank_account where client_id=?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, client.getClientID());
+            pstmt.executeUpdate();
+        }
+        String sql2 = "DELETE FROM client where client_id=?";
+        try (PreparedStatement pstmt2 = conn.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt2.setString(1, client.getClientID());
+            pstmt2.executeUpdate();
+        }
 
     }
 
@@ -107,6 +117,7 @@ class Login_AccountTest {
     @DisplayName("signup with valid client accNm")
     @Test
     void signUpSuccess() throws SQLException {
+//        try {
             manager.createAccount(conn,client,"Saving");
             Bank_Account acc = Bank_Account.getByClientId(conn,client.getClientID());
 
@@ -120,18 +131,9 @@ class Login_AccountTest {
 
             // Assert success (0) for valid signup
             assertEquals(0, result, "Signup should succeed with a valid account number");
-
-
-        String sql = "DELETE FROM bank_account where client_id=?";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, client.getClientID());
-            pstmt.executeUpdate();
-        }
-        String sql2 = "DELETE FROM client where client_id=?";
-        try (PreparedStatement pstmt2 = conn.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt2.setString(1, client.getClientID());
-            pstmt2.executeUpdate();
-        }
+//        } catch (SQLException e) {
+//            fail("SQLException occurred: " + e.getMessage());
+//        }
         String sql3 = "DELETE FROM login_account where username=?";
         try (PreparedStatement pstmt3 = conn.prepareStatement(sql3, Statement.RETURN_GENERATED_KEYS)) {
             pstmt3.setString(1, username);
