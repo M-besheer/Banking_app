@@ -205,13 +205,13 @@ public class Client {
 				return 1; // Account not found
 			}
 
-			// 2. Validate the deposit amount is positive
+			// 2. Validate the withdraw amount is positive
 			if (amount <= 0) {
-				return 2; // Invalid deposit amount
+				return 2; // Invalid withdraw amount
 			}
 			int currentbalance= Integer.parseInt(account.getBalance());
 			if(currentbalance<amount){
-				return 3;
+				return 3; //Insufficient funds
 			}
 
 
