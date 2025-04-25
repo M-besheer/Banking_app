@@ -31,99 +31,112 @@ class Bank_AccountTest {
                 "Test_mother_name", "12345", "1/2/2000", "01000000000",
                 "test@gmail.com", "testAddress");
         TestManager.createAccount(conn, TestClient, "Current");
+    }
+
+    @Nested
+    class getAccountBy_Tests {
+
+        @Test
+        @Order(1)
+        void getByValidClientId() throws SQLException {
+            Bank_Account bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
+
+            assertEquals(Bank_Account.getByClientId(conn, TestClient.getClientID()).getAccountNum(),
+                    bank_accountTest.getAccountNum());
+            assertEquals(TestClient.getClientID(), bank_accountTest.getClientId());
+            assertEquals(null, bank_accountTest.getLoginId());
+            assertEquals("Current", bank_accountTest.getType());
+            assertEquals("0", bank_accountTest.getBalance());
+            assertEquals("1", bank_accountTest.getStatus());
+        }
+
+        @Test
+        void getByInvalidClientId() throws SQLException {
+            Bank_Account bank_accountTest = Bank_Account.getByClientId(conn, "0");
+
+            assertNull(bank_accountTest);
+        }
+
+        @Test
+        @Order(2)  //Must run after we have successfully tested getByClientId function
+        void getByValidAccountNumber() throws SQLException {
+            Bank_Account bank_accountTest;
+            bank_accountTest = Bank_Account.getByAccountNumber
+                    (conn, Bank_Account.getByClientId(conn, TestClient.getClientID()).getAccountNum());
+
+            assertEquals(Bank_Account.getByClientId(conn, TestClient.getClientID()).getAccountNum(),
+                    bank_accountTest.getAccountNum());
+            assertEquals(TestClient.getClientID(), bank_accountTest.getClientId());
+            assertEquals(null, bank_accountTest.getLoginId());
+            assertEquals("Current", bank_accountTest.getType());
+            assertEquals("0", bank_accountTest.getBalance());
+            assertEquals("1", bank_accountTest.getStatus());
+        }
+
+        @Test
+        void getByInvalidAccountNumber() throws SQLException {
+            Bank_Account bank_accountTest;
+            bank_accountTest = Bank_Account.getByAccountNumber
+                    (conn, "0");
+
+            assertNull(bank_accountTest);
+        }
+    }
+
+    @Nested
+    class BalanceTests {
+
+        @Test
+        @Order(2) //Must run after we have successfully tested getByClientId function
+        void updateBalance() throws SQLException {
+            Bank_Account bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
+            Client SenderClient = Client.getById(conn, "10000");
+
+            assertEquals("0", bank_accountTest.getBalance());
+            SenderClient.transferMoney(conn, bank_accountTest.getAccountNum(), 100);
+            assertEquals("0", bank_accountTest.getBalance());
+            bank_accountTest.updateBalance(conn);
+            assertEquals("100", bank_accountTest.getBalance());
+
+            // Reset the balance back to original owner after test
+            TestClient.transferMoney(conn, Client.getAccNumByCNIC(conn,SenderClient.getCNIC()), 100);
+        }
 
     }
 
-    @Test
-    @Order(1)
-    void getByValidClientId() throws SQLException {
-        Bank_Account bank_accountTest=Bank_Account.getByClientId(conn, TestClient.getClientID());
+    @Nested
+    class LoginIdTests {
 
-        assertEquals(Bank_Account.getByClientId(conn, TestClient.getClientID()).getAccountNum(),
-                bank_accountTest.getAccountNum());
-        assertEquals(TestClient.getClientID(), bank_accountTest.getClientId());
-        assertEquals(null, bank_accountTest.getLoginId());
-        assertEquals("Current", bank_accountTest.getType());
-        assertEquals("0", bank_accountTest.getBalance());
-        assertEquals("1", bank_accountTest.getStatus());
-    }
+        @Test
+        @Order(2) //Must run after we have successfully tested getByClientId function
+        void getByValidLoginId() throws SQLException {
+            Bank_Account bank_accountTest;
+            bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
+            Login_Account.signUp(conn, "TestUser", "TestPass", "TestPass", bank_accountTest.getAccountNum());
+            bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
+            bank_accountTest = Bank_Account.getByLoginId(conn, bank_accountTest.getLoginId());
 
-    @Test
-    void getByInvalidClientId() throws SQLException {
-        Bank_Account bank_accountTest=Bank_Account.getByClientId(conn, "0");
+            assertEquals(Bank_Account.getByClientId(conn, TestClient.getClientID()).getAccountNum(),
+                    bank_accountTest.getAccountNum());
+            assertEquals(TestClient.getClientID(), bank_accountTest.getClientId());
+            assertEquals(Login_Account.getByUsername(conn, "TestUser").getLoginId(), bank_accountTest.getLoginId());
+            assertEquals("Current", bank_accountTest.getType());
+            assertEquals("0", bank_accountTest.getBalance());
+            assertEquals("1", bank_accountTest.getStatus());
+        }
 
-        assertNull(bank_accountTest);
-    }
+        @Test
+        @Order(2) //Must run after we have successfully tested getByClientId function
+        void getByInvalidLoginId() throws SQLException {
+            Bank_Account bank_accountTest;
+            bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
+            Login_Account.signUp(conn, "TestUser", "TestPass", "TestPass", bank_accountTest.getAccountNum());
+            bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
+            bank_accountTest = Bank_Account.getByLoginId(conn, "0");
 
-    @Test
-    @Order(2)  //Must run after we have successfully tested getByClientId function
-    void getByValidAccountNumber() throws SQLException {
-        Bank_Account bank_accountTest;
-        bank_accountTest = Bank_Account.getByAccountNumber
-                (conn, Bank_Account.getByClientId(conn, TestClient.getClientID()).getAccountNum());
+            assertNull(bank_accountTest);
+        }
 
-        assertEquals(Bank_Account.getByClientId(conn, TestClient.getClientID()).getAccountNum(),
-                bank_accountTest.getAccountNum());
-        assertEquals(TestClient.getClientID(), bank_accountTest.getClientId());
-        assertEquals(null, bank_accountTest.getLoginId());
-        assertEquals("Current", bank_accountTest.getType());
-        assertEquals("0", bank_accountTest.getBalance());
-        assertEquals("1", bank_accountTest.getStatus());
-    }
-
-    @Test
-    void getByInvalidAccountNumber() throws SQLException {
-        Bank_Account bank_accountTest;
-        bank_accountTest = Bank_Account.getByAccountNumber
-                (conn, "0");
-
-        assertNull(bank_accountTest);
-    }
-
-    @Test
-    @Order(2) //Must run after we have successfully tested getByClientId function
-    void updateBalance() throws SQLException {
-        Bank_Account bank_accountTest=Bank_Account.getByClientId(conn, TestClient.getClientID());
-        Client SenderClient = Client.getById(conn, "10000");
-
-        assertEquals("0", bank_accountTest.getBalance());
-        SenderClient.transferMoney(conn, bank_accountTest.getAccountNum(), 100);
-        assertEquals("0", bank_accountTest.getBalance());
-        bank_accountTest.updateBalance(conn);
-        assertEquals("100", bank_accountTest.getBalance());
-
-        // Reset the balance back to original owner//////////
-        TestClient.transferMoney(conn, Client.getAccNumByCNIC(conn,SenderClient.getCNIC()), 100);
-    }
-
-    @Test
-    @Order(2) //Must run after we have successfully tested getByClientId function
-    void getByValidLoginId() throws SQLException {
-        Bank_Account bank_accountTest;
-        bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
-        Login_Account.signUp(conn, "TestUser", "TestPass", "TestPass", bank_accountTest.getAccountNum());
-        bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
-        bank_accountTest=Bank_Account.getByLoginId(conn, bank_accountTest.getLoginId());
-
-        assertEquals(Bank_Account.getByClientId(conn, TestClient.getClientID()).getAccountNum(),
-                bank_accountTest.getAccountNum());
-        assertEquals(TestClient.getClientID(), bank_accountTest.getClientId());
-        assertEquals(Login_Account.getByUsername(conn, "TestUser").getLoginId(), bank_accountTest.getLoginId());
-        assertEquals("Current", bank_accountTest.getType());
-        assertEquals("0", bank_accountTest.getBalance());
-        assertEquals("1", bank_accountTest.getStatus());
-    }
-
-    @Test
-    @Order(2) //Must run after we have successfully tested getByClientId function
-    void getByInvalidLoginId() throws SQLException {
-        Bank_Account bank_accountTest;
-        bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
-        Login_Account.signUp(conn, "TestUser", "TestPass", "TestPass", bank_accountTest.getAccountNum());
-        bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
-        bank_accountTest=Bank_Account.getByLoginId(conn, "0");
-
-        assertNull(bank_accountTest);
     }
 
     @AfterEach
