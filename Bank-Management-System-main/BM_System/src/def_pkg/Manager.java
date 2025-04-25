@@ -38,8 +38,7 @@ public class Manager {
 				try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 					pstmt.setString(1, existingClient.getClientID());
 					pstmt.setString(2, type);
-					pstmt.executeUpdate();
-				}
+					pstmt.executeUpdate();}
 
 				conn.commit();
 				return 0;
@@ -48,13 +47,13 @@ public class Manager {
 		} catch (SQLException e) {
 			conn.rollback();
 			throw e;
-		} finally {
+		}
+		finally {
 			conn.setAutoCommit(true);
 		}
 	}
 
 	public int blockAccount(Connection conn, Bank_Account acc) throws SQLException {
-
 		String sql2 = "SELECT status FROM bank_account WHERE acc_num = ?";
 		try (PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
 			pstmt2.setString(1, acc.getAccountNum());
@@ -71,7 +70,8 @@ public class Manager {
 					} else {
 						return 0;  //No change, account already blocked
 					}
-				} else {
+				}
+				else {
 					return 2;  //Account doesnt exist
 				}
 			}
@@ -79,7 +79,6 @@ public class Manager {
 	}
 
 	public int unblockAccount(Connection conn, Bank_Account acc) throws SQLException {
-
 		String sql2 = "SELECT status FROM bank_account WHERE acc_num = ?";
 		try (PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
 			pstmt2.setString(1, acc.getAccountNum());
@@ -96,19 +95,17 @@ public class Manager {
 					} else {
 						return 0; //No change, account already blocked
 					}
-				} else {
+				}
+				else {
 					return 2; //Account doesnt exist
 				}
 			}
 		}
 	}
 
-
 	// Information retrieval methods
 	public Client getClientInfo(Connection conn, String accNum) throws SQLException {
-		String sql = "SELECT c.* FROM client c "
-				+ "JOIN bank_account ba ON c.client_id = ba.client_id "
-				+ "WHERE ba.acc_num = ?";
+		String sql = "SELECT c.* FROM client c JOIN bank_account ba ON c.client_id = ba.client_id WHERE ba.acc_num = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, accNum);
 			try (ResultSet rs = pstmt.executeQuery()) {
@@ -125,12 +122,9 @@ public class Manager {
 							rs.getString("email"),
 							rs.getString("address")
 					);
-				}
-			}
-		}
+				}}}
 		return null;
 	}
-
 
 	public void updateClientInfo(Connection conn, String clientId, String phone,  String email, String address) throws SQLException {
 		String sql = "UPDATE client SET phone = ?, email = ?, address = ? WHERE client_id = ?";
@@ -151,11 +145,9 @@ public class Manager {
 				int totalAccounts = rs.getInt("total_accounts");
 				System.out.println("Total accounts in the system: " + totalAccounts);
 				return totalAccounts;
-			}
-		}
+			}}
 		return 0; // Default value if no rows are found
 	}
-
 
 	public int getTotalEmployees(Connection conn,Manager manager) throws SQLException {
 		String sql = "SELECT COUNT(*) AS total_employees FROM employee";
@@ -166,7 +158,8 @@ public class Manager {
 				System.out.println("Total Employees in the system: " + totalEmployees);
 				return totalEmployees;
 			}
-		} catch (SQLException e) {
+		}
+		catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		return 0;

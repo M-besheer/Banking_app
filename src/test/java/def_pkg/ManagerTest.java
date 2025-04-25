@@ -12,13 +12,15 @@ class ManagerTest {
     private Manager manager;
     private Client testClient;
 
+    String url = "jdbc:mysql://localhost:3306/bank_schema";
+    String username = "root";
+    String password = "";
+
     @BeforeAll
     void setupConnection() {
         manager = new Manager("Abdelrahman");
         testClient = new Client("Abdelrahman", "Sallam", "Mostafa", "mama", "30410180105717", "18/10/2004", "01129908336", "sallam@gmail.com", "cairo");
-        String url = "jdbc:mysql://localhost:3306/bank_schema";
-        String username = "root";
-        String password = "";
+
         try {
             conn = DriverManager.getConnection(url, username, password);
         } catch (SQLException e) {
@@ -72,6 +74,20 @@ class ManagerTest {
             int result2 = manager.createAccount(conn, testClient, "Saving");
             assertEquals(1, result2);
         }
+
+        @Test
+        @DisplayName("createAccount throws and rolls back on SQL error")
+        void createAccountSqlException() throws SQLException {
+            // force conn into bad state
+
+            try ( Connection badConn = DriverManager.getConnection(url, username, password) ) {
+                badConn.close();  // now it’s closed
+                assertThrows(SQLException.class,
+                        () -> manager.createAccount(badConn, testClient, "Saving")
+                );
+            }
+
+        }
     }
 
 
@@ -91,55 +107,106 @@ class ManagerTest {
 
             assert acc != null;
             int blockResult = manager.blockAccount(conn, acc);
-            assertEquals(0, blockResult);
+            assertEquals(1, blockResult);
 
             assertEquals("2", acc.getStatus());
         }
 
         @Test
         @Order(2)
+        @DisplayName("Block a non-existing account")
+        void blockNonExistingAccount() throws SQLException {
+            Bank_Account acc = new Bank_Account();
+            int blockResult = manager.blockAccount(conn, acc);
+            assertEquals(2, blockResult);
+        }
+
+        @Test
+        @Order(3)
+        @DisplayName("Block a blocked account")
+        void blockedAccount() throws SQLException {
+            manager.createAccount(conn, testClient, "Saving");
+            Bank_Account acc = Bank_Account.getByClientId(conn, testClient.getClientID());
+            assert acc != null;
+            int blockResult = manager.blockAccount(conn, acc);
+            assertEquals(1, blockResult);
+            assertEquals("2", acc.getStatus());
+
+            blockResult = manager.blockAccount(conn, acc);
+            assertEquals(0, blockResult);
+            assertEquals("2", acc.getStatus());
+        }
+
+
+        @Test
+        @Order(4)
         @DisplayName("Block then unblock")
         void UnblockAccount() throws SQLException {
             manager.createAccount(conn, testClient, "Saving");
             Bank_Account acc = Bank_Account.getByClientId(conn, testClient.getClientID());
             assert acc != null;
             int blockResult = manager.blockAccount(conn, acc);
-            assertEquals(0, blockResult);
+            assertEquals(1, blockResult);
             assertEquals("2", acc.getStatus());
 
             int unblockResult = manager.unblockAccount(conn, acc);
-            assertEquals(0, unblockResult);
+            assertEquals(1, unblockResult);
             assertEquals("1", acc.getStatus());
         }
 
+
+
         @Test
-        @Order(3)
-        @DisplayName("Block with miss matching cnic")
-        void blockAccountWithWrongCNIC() throws SQLException {
-            manager.createAccount(conn, testClient, "Saving");
-            Bank_Account acc = Bank_Account.getByClientId(conn, testClient.getClientID());
-            assert acc != null;
-            int blockResult = manager.blockAccount(conn, acc);
-            assertEquals(-1, blockResult);
-            assertEquals("1", acc.getStatus());
+        @Order(5)
+        @DisplayName("Unblock a non-existing account")
+        void unblockNonExistingAccount() throws SQLException {
+            Bank_Account acc = new Bank_Account(); // Not saved in DB
+            int unblockResult = manager.unblockAccount(conn, acc);
+            assertEquals(2, unblockResult); // Assuming 2 means "not found"
         }
 
         @Test
-        @Order(4)
-        @DisplayName("unblock with miss matching cnic")
-        void unblockAccountWithWrongCNIC() throws SQLException {
+        @Order(6)
+        @DisplayName("Unblock an already active account")
+        void unblockActiveAccount() throws SQLException {
             manager.createAccount(conn, testClient, "Saving");
             Bank_Account acc = Bank_Account.getByClientId(conn, testClient.getClientID());
             assert acc != null;
-            int blockResult = manager.blockAccount(conn, acc);
-            assertEquals(0, blockResult);
-            assertEquals("2", acc.getStatus());
+            assertEquals("1", acc.getStatus()); // Should be active by default
 
             int unblockResult = manager.unblockAccount(conn, acc);
-            assertEquals(-1, unblockResult);
-            assertEquals("2", acc.getStatus());
+            assertEquals(0, unblockResult); // Assuming 0 means "already active"
+
+            Bank_Account refreshed = Bank_Account.getByClientId(conn, testClient.getClientID());
+            assert refreshed != null;
+            assertEquals("1", refreshed.getStatus());
+        }
+
+        @Test
+        @DisplayName("blockAccount throws on SQL error")
+        void blockAccountSqlException() throws SQLException {
+
+            try ( Connection badConn = DriverManager.getConnection(url, username, password) ) {
+                badConn.close();  // now it’s closed
+                assertThrows(SQLException.class,
+                        () -> manager.blockAccount(badConn, new Bank_Account())
+                );
+            }
 
         }
+
+        @Test
+        @DisplayName("unblockAccount throws on SQL error")
+        void unblockAccountSqlException() throws SQLException {
+            try ( Connection badConn = DriverManager.getConnection(url, username, password) ) {
+                badConn.close();  // now it’s closed
+                assertThrows(SQLException.class,
+                        () -> manager.unblockAccount(badConn, new Bank_Account())
+                );
+            }
+        }
+
+
 
     }
 
@@ -220,19 +287,104 @@ class ManagerTest {
 //
 //    }
 
+    @Test
+    @DisplayName("getTotalEmployees wraps SQLException into RuntimeException")
+    void getTotalEmployeesRuntimeException() throws SQLException {
+
+        try ( Connection badConn = DriverManager.getConnection(url, username, password) ) {
+            badConn.close();  // now it’s closed
+            assertThrows(RuntimeException.class,
+                    () -> manager.getTotalEmployees(badConn, manager)
+            );
+        }
+
+    }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Nested
+    @DisplayName("Exceptional Rollback & Error Paths")
+    class ExceptionalPaths {
+
+        @Test
+        @DisplayName("createAccount rolls back on SQL error (no partial insert)")
+        void createAccountRollback() throws SQLException {
+            // open+close a throwaway conn to cause the error
+            try ( Connection badConn = DriverManager.getConnection(url, username, password) ) {
+                badConn.setAutoCommit(false);
+                badConn.close();
+
+                // attempt to create → SQLException
+                assertThrows(SQLException.class,
+                        () -> manager.createAccount(badConn, testClient, "Saving")
+                );
+
+                // on real conn, verify no client or account exists
+                assertNull(Client.getByCNIC(conn, testClient.getCNIC()));
+            }
+        }
+
+        @Test
+        @DisplayName("getClientInfo throws on SQL error")
+        void getClientInfoSqlException() throws SQLException {
+            try ( Connection badConn = DriverManager.getConnection(url, username, password) ) {
+                badConn.close();
+                assertThrows(SQLException.class,
+                        () -> manager.getClientInfo(badConn, "12345")
+                );
+            }
+        }
+
+        @Test
+        @DisplayName("updateClientInfo throws on SQL error")
+        void updateClientInfoSqlException() throws SQLException {
+            // need an existing client so UPDATE SQL compiles—but we’re using closed conn anyway
+            manager.createAccount(conn, testClient, "Saving");
+            Bank_Account acc = Bank_Account.getByClientId(conn, testClient.getClientID());
+            assertNotNull(acc);
+
+            try ( Connection badConn = DriverManager.getConnection(url, username, password) ) {
+                badConn.close();
+                assertThrows(SQLException.class,
+                        () -> manager.updateClientInfo(badConn, testClient.getClientID(),
+                                "000", "e@e.com", "addr")
+                );
+            }
+        }
+
+        @Test
+        @DisplayName("getTotalAccounts throws on SQL error")
+        void getTotalAccountsSqlException() throws SQLException {
+            try ( Connection badConn = DriverManager.getConnection(url, username, password) ) {
+                badConn.close();
+                assertThrows(SQLException.class,
+                        () -> manager.getTotalAccounts(badConn, manager)
+                );
+            }
+        }
+    }
+
+
+
+
+
 
 
     @AfterEach
     void tearDown() throws SQLException {
-        String sql = "DELETE FROM bank_account where client_id=?";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, testClient.getClientID());
-            pstmt.executeUpdate();
-        }
-        String sql2 = "DELETE FROM client where client_id=?";
-        try (PreparedStatement pstmt2 = conn.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt2.setString(1, testClient.getClientID());
-            pstmt2.executeUpdate();
+        if (conn != null && !conn.isClosed()) {
+            String sql = "DELETE FROM bank_account where client_id=?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                pstmt.setString(1, testClient.getClientID());
+                pstmt.executeUpdate();
+            }
+            String sql2 = "DELETE FROM client where client_id=?";
+            try (PreparedStatement pstmt2 = conn.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS)) {
+                pstmt2.setString(1, testClient.getClientID());
+                pstmt2.executeUpdate();
+            }
         }
 
     }
