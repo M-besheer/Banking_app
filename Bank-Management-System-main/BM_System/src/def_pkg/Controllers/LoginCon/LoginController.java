@@ -16,6 +16,7 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import javafx.util.Pair;
 
 public class LoginController {
     @FXML public Label loginerrorlabel;
@@ -40,19 +41,21 @@ public class LoginController {
     private void handleLogin() {
         try (DB_handler db = new DB_handler()) {
             Connection conn = db.getConnection();
-            Login_Account loggedInUser = Login_Account.signIn(conn,
+            Pair<Login_Account,Integer> loggedInUser = Login_Account.signIn(conn,
                     usernameField.getText(),
                     passwordField.getText()
             );
+            Login_Account loginAccount = loggedInUser.getKey();
+            int blockedStatus = loggedInUser.getValue();
 
-            if (loggedInUser != null) {
-                String userType = loggedInUser.getType();
+            if (loginAccount != null) {
+                String userType = loginAccount.getType();
                 switch(userType) {
                     case "Client":
-                        Bank_Account account = Bank_Account.getByLoginId(conn, loggedInUser.getLoginId());
-                        System.out.println("Searching for login ID: " + loggedInUser.getLoginId());
+                        Bank_Account account = Bank_Account.getByLoginId(conn, loginAccount.getLoginId());
+                        System.out.println("Searching for login ID: " + loginAccount.getLoginId());
                         Client client = Client.getById(conn, account.getClientId());
-                        if ("1".equals(account.getStatus())) {
+                        if (blockedStatus == 1) {
                             System.out.println("Mr."+client.getFatherName()+" has entered the app");
                             openClientMenu(client, account);
                         } else {
@@ -62,7 +65,7 @@ public class LoginController {
                         }
                         break;
                     case "Manager":
-                        Manager manager = new Manager(Login_Account.getEmployeeName(conn, loggedInUser.getLoginId()));
+                        Manager manager = new Manager(Login_Account.getEmployeeName(conn, loginAccount.getLoginId()));
                         System.out.println("Mr."+manager.getName()+" has entered the app");
                         openManagerMenu(manager);
                         break;

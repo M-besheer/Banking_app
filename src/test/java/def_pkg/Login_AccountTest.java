@@ -165,7 +165,7 @@ class Login_AccountTest {
     void signInFailure_no_account() {
         try {
             // Attempt to sign in with incorrect credentials
-            Login_Account account = Login_Account.signIn(conn, "invalidUser", "wrongPass");
+            Login_Account account = Login_Account.signIn(conn, "invalidUser", "wrongPass").getKey();
 
             // Expecting null since the credentials are invalid
             assertNull(account, "Expected null for invalid credentials but got an account");
@@ -179,7 +179,7 @@ class Login_AccountTest {
     void signInFailure_wrong_password() {
         try {
             // Attempt to sign in with incorrect credentials
-            Login_Account account = Login_Account.signIn(conn, "medhat", "wrongPass");
+            Login_Account account = Login_Account.signIn(conn, "medhat", "wrongPass").getKey();
 
             // Expecting null since the credentials are invalid
             assertNull(account, "Expected null for invalid credentials but got an account");
@@ -193,9 +193,9 @@ class Login_AccountTest {
     void signInsuccess() {
         try {
 
-            Login_Account account = Login_Account.signIn(conn, "Mohamed", "11");/////////exist in database
+            Login_Account account = Login_Account.signIn(conn, "MohAshraf", "Ashraf").getKey();/////////exist in database
             assertNotNull(account);
-            assertEquals("Mohamed", account.getUsername());  // Ensure ID or Username
+            assertEquals("MohAshraf", account.getUsername());  // Ensure ID or Username
         } catch (SQLException e) {
             fail("SQLException occurred: " + e.getMessage());
         }

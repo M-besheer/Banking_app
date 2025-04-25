@@ -1,6 +1,10 @@
 package def_pkg;
 
 import java.sql.*;
+import java.util.Objects;
+
+import javafx.util.Pair;
+
 
 public class Login_Account {
 	private String login_id;
@@ -28,7 +32,7 @@ public class Login_Account {
 	}
 
 	// Authentication methods
-	public static Login_Account signIn(Connection conn, String username, String password) throws SQLException {
+	public static Pair<Login_Account,Integer> signIn(Connection conn, String username, String password) throws SQLException {
 		String sql = "SELECT login_id, type FROM login_account WHERE username = ? AND password = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, username);
@@ -117,15 +121,47 @@ public class Login_Account {
 			pstmt.setString(1, username);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
-					return new Login_Account(
-							rs.getString("login_id"),
-							username,
-							"", // Empty password for security
-							rs.getString("type")
-					);
+					if (!rs.wasNull()) {
+						if(Objects.equals(rs.getString("type"), "M"))
+						{
+							return new Pair<>(new Login_Account(
+									rs.getString("login_id"),
+									username,
+									"", // Empty password for security
+									rs.getString("type")
+							), 1);
+						}
+						else
+						{
+							String sql2 = "SELECT status FROM bank_account where login_id=?";
+							try (PreparedStatement pstmt2 = conn.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS)) {
+								System.out.println(rs.getString("login_id"));
+								pstmt2.setString(1, rs.getString("login_id"));
+								try (ResultSet rs2 = pstmt2.executeQuery()) {
+									if (rs2.next()) {
+										if (rs2.getInt("status") == 1) {
+											return new Pair<>(new Login_Account(
+													rs.getString("login_id"),
+													username,
+													"", // Empty password for security
+													rs.getString("type")
+											), 1);
+										} else if (rs2.getInt("status") == 2) {
+											return new Pair<>(new Login_Account(
+													rs.getString("login_id"),
+													username,
+													"", // Empty password for security
+													rs.getString("type")
+											), 2);
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
-		return null;
+		return new Pair<>(null,0);
 	}
 }
