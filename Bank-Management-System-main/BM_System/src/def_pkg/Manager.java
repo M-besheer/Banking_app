@@ -8,9 +8,9 @@ import java.util.Objects;
 public class Manager {
 	private String name;
 
-//	public Manager() {
-//		this.name = "";
-//	}
+	public Manager() {
+		this.name = "";
+	}
 
 	public Manager(String name) {
 		this.name = name;

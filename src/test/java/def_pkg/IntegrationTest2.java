@@ -22,10 +22,6 @@ class BankSystemIntegrationTest {
         } catch (SQLException e) {
             throw new IllegalStateException("Unable to connect to the database. " + e.getMessage());
         }
-        initializeTestData();
-    }
-
-    private void initializeTestData() throws SQLException {
         // Create base test client
         testManager = new Manager();
         testClient = new Client("Test_f_name", "Test_l_name", "Test_father_name",
@@ -34,133 +30,117 @@ class BankSystemIntegrationTest {
         try (PreparedStatement pstmt = conn.prepareStatement(
                 "UPDATE bank_account SET status = 1 WHERE acc_num = '500001'")) {
             pstmt.executeUpdate();
-            }
+        }
     }
 
-    @Nested
-    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    @Test
     @Order(1)
-    class ManagerWorkflowTests {
-        @Test
-        @Order(1)
-        void testManagerOperations() throws SQLException {
-            // 1. Test invalid login
-            Pair<Login_Account, Integer> loginResult = Login_Account.signIn(conn, "wrongUser", "wrongPass");
-            assertNull(loginResult.getKey());
-            assertEquals(0, loginResult.getValue());
+    void testManagerOperations() throws SQLException {
+        // 1. Test invalid login
+        Pair<Login_Account, Integer> loginResult = Login_Account.signIn(conn, "wrongUser", "wrongPass");
+        assertNull(loginResult.getKey());
+        assertEquals(0, loginResult.getValue());
 
-            // 2. Valid manager login
-            loginResult = Login_Account.signIn(conn, "Abdelrahman20", "Sallam");
-            assertNotNull(loginResult.getKey());
-            assertEquals(1, (int) loginResult.getValue());
-            assertEquals("Manager", loginResult.getKey().getType());
+        // 2. Valid manager login
+        loginResult = Login_Account.signIn(conn, "Abdelrahman20", "Sallam");
+        assertNotNull(loginResult.getKey());
+        assertEquals(1, (int) loginResult.getValue());
+        assertEquals("Manager", loginResult.getKey().getType());
 
-            // 3. Account created
-            int createResult = testManager.createAccount(conn, testClient, "Savings");
-            assertEquals(0, createResult);
+        // 3. Account created
+        int createResult = testManager.createAccount(conn, testClient, "Savings");
+        assertEquals(0, createResult);
 
-            // 4. Account already exists
-            int failedResult = testManager.createAccount(conn, testClient, "Savings");
-            assertEquals(1, failedResult);
+        // 4. Account already exists
+        int failedResult = testManager.createAccount(conn, testClient, "Savings");
+        assertEquals(1, failedResult);
 
+        Bank_Account nullAcc = new Bank_Account();
+        int nullResult = testManager.blockAccount(conn, nullAcc);
+        assertEquals(2, nullResult);
 
-            Bank_Account nullAcc = new Bank_Account();
-            int nullResult = testManager.blockAccount(conn, nullAcc);
-            assertEquals(2, nullResult);
+        // 4. Block account operations
+        Bank_Account acc500001 = Bank_Account.getByAccountNumber(conn, "500001");
+        int blockResult = testManager.blockAccount(conn, acc500001);
+        assertEquals(1, blockResult);
 
-            // 4. Block account operations
-            Bank_Account acc500001 = Bank_Account.getByAccountNumber(conn, "500001");
-            int blockResult = testManager.blockAccount(conn, acc500001);
-            assertEquals(1, blockResult);
-
-            int reBlockResult = testManager.blockAccount(conn, acc500001);
-            assertEquals(0, reBlockResult);
-        }
-
-        @Test
-        @Order(2)
-        void testClientManagement() throws SQLException {
-            // Update client info
-            Client nullClient = testManager.getClientInfo(conn, null);
-            assertNull(nullClient);
-
-            Client client = testManager.getClientInfo(conn, "500002");
-            assertNotNull(client);
-            testManager.updateClientInfo(conn, client.getClientID(), "9876543", "new@email.com", "New Address");
-
-            Client updatedClient = testManager.getClientInfo(conn, "500002");
-            assertEquals("9876543", updatedClient.getPhone());
-        }
+        int reBlockResult = testManager.blockAccount(conn, acc500001);
+        assertEquals(0, reBlockResult);
     }
 
-    @Nested
-    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    @Test
     @Order(2)
-    class ClientTransactionTests {
-        @Test
-        @Order(1)
-        void testAccountOperations() throws SQLException {
-            // Signup and login
-            int signupResult = Login_Account.signUp(conn, "new_user", "pass123", "pass123", Client.getAccNumByCNIC(conn, "12345"));
-            assertEquals(0, signupResult);
+    void testClientManagement() throws SQLException {
+        // Update client info
+        Client nullClient = testManager.getClientInfo(conn, null);
+        assertNull(nullClient);
 
-            Pair<Login_Account, Integer> loginResult = Login_Account.signIn(conn, "new_user", "pass123");
-            assertNotNull(loginResult.getKey());
-            assertEquals(1, loginResult.getValue());
+        Client client = testManager.getClientInfo(conn, "500002");
+        assertNotNull(client);
+        testManager.updateClientInfo(conn, client.getClientID(), "9876543", "new@email.com", "New Address");
 
-            // Money operations
-            Client client = Client.getByCNIC(conn, "12345");
-            int depositResult = client.depositMoney(conn, "500000", 5000);
-            assertEquals(0, depositResult);
-
-            int withdrawResult = client.WithdrawMoney(conn, "500000", 5000);
-            assertEquals(0, withdrawResult);
-        }
+        Client updatedClient = testManager.getClientInfo(conn, "500002");
+        assertEquals("9876543", updatedClient.getPhone());
     }
 
-//    @Nested
-//    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-//    @Order(3)
-//    class AccountStatusTests {
-//        @Test
-//        @Order(1)
-//        void testAccountStatusTransitions() throws SQLException {
-//            // Block/unblock workflow
-//            Bank_Account acc500001 = Bank_Account.getByAccountNumber(conn, "500001");
-//            testManager.blockAccount(conn, acc500001);
-//
-//            Pair<Login_Account, Integer> loginResult = Login_Account.signIn(conn, "existing_user", "pass123");
-//            assertEquals(2, loginResult.getValue());
-//
-//            int unblockResult = testManager.unblockAccount(conn, acc500001);
-//            assertEquals(1, unblockResult);
-//
-//            Pair<Login_Account, Integer> unblockLoginResult = Login_Account.signIn(conn, "existing_user", "pass123");
-//            assertNotNull(unblockLoginResult.getKey());
-//            assertEquals(1, unblockLoginResult.getValue());
-//        }
-//    }
+    @Test
+    @Order(3)
+    void testAccountOperations() throws SQLException {
+        // Signup and login
+        int signupResult = Login_Account.signUp(conn, "new_user", "pass123", "pass123", Client.getAccNumByCNIC(conn, "12345"));
+        assertEquals(0, signupResult);
 
-//    @AfterAll
-//    static void tearDown() throws SQLException {
-//        // Clean bank_account
-//        try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM bank_account WHERE client_id = ?")) {
-//            pstmt.setString(1, testClient.getClientID());
-//            pstmt.executeUpdate();
-//        }
-//
-//        // Clean login_account
-//        try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM login_account WHERE username = ?")) {
-//            pstmt.setString(1, "new_user");
-//            pstmt.executeUpdate();
-//        }
-//
-//        // Clean client
-//        try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM client WHERE client_id = ?")) {
-//            pstmt.setString(1, testClient.getClientID());
-//            pstmt.executeUpdate();
-//        }
-//
-//        conn.close();
-//    }
+        Pair<Login_Account, Integer> loginResult = Login_Account.signIn(conn, "new_user", "pass123");
+        assertNotNull(loginResult.getKey());
+        assertEquals(1, loginResult.getValue());
+
+        // Money operations
+        Client client = Client.getByCNIC(conn, "12345");
+        int depositResult = client.depositMoney(conn, "500000", 5000);
+        assertEquals(0, depositResult);
+
+        int withdrawResult = client.WithdrawMoney(conn, "500000", 5000);
+        assertEquals(0, withdrawResult);
+    }
+
+    @Test
+    @Order(4)
+    void testAccountStatusTransitions() throws SQLException {
+        // Block/unblock workflow
+        Bank_Account acc500001 = Bank_Account.getByAccountNumber(conn, "500001");
+        testManager.blockAccount(conn, acc500001);
+
+        Pair<Login_Account, Integer> loginResult = Login_Account.signIn(conn, "existing_user", "pass123");
+        assertEquals(2, loginResult.getValue());
+
+        int unblockResult = testManager.unblockAccount(conn, acc500001);
+        assertEquals(1, unblockResult);
+
+        Pair<Login_Account, Integer> unblockLoginResult = Login_Account.signIn(conn, "existing_user", "pass123");
+        assertNotNull(unblockLoginResult.getKey());
+        assertEquals(1, unblockLoginResult.getValue());
+    }
+
+    @AfterAll
+    static void tearDown() throws SQLException {
+        // Clean bank_account
+        try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM bank_account WHERE client_id = ?")) {
+            pstmt.setString(1, testClient.getClientID());
+            pstmt.executeUpdate();
+        }
+
+        // Clean login_account
+        try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM login_account WHERE username = ?")) {
+            pstmt.setString(1, "new_user");
+            pstmt.executeUpdate();
+        }
+
+        // Clean client
+        try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM client WHERE client_id = ?")) {
+            pstmt.setString(1, testClient.getClientID());
+            pstmt.executeUpdate();
+        }
+
+        conn.close();
+    }
 }
