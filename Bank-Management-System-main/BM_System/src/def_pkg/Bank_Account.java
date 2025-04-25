@@ -11,7 +11,7 @@ public class Bank_Account {
 	private String status;
 	private String opening_date;
 
-
+	public Bank_Account() {}
 
 	public Bank_Account(String acc_num, String client_id, String login_id, String type,
 						String balance, String status, String opening_date) {
