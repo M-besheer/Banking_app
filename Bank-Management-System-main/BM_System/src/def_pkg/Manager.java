@@ -15,18 +15,7 @@ public class Manager {
 	public Manager(String name) {
 		this.name = name;
 	}
-//	private Connection establishConnection() {
-//		String url = "jdbc:mysql://localhost:3306/bank_schema";
-//		String username = "root";
-//		String password = "";
-//		try {
-//			Connection connection = DriverManager.getConnection(url, username, password);
-//			System.out.println("Connection established successfully!");
-//			return connection;
-//		} catch (SQLException e) {
-//			throw new IllegalStateException("Unable to connect to the database. " + e.getMessage());
-//		}
-//	}
+
 	public String getName() {
 		return this.name;
 	}
