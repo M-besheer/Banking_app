@@ -83,12 +83,8 @@ public class IntegrationTest {
 
         Bank_Account fetchBankAccount = Bank_Account.getByClientId(conn,fetchClient.getClientID());
 
-
-        Login_Account.signUp(conn, "besela", "dodo", "dodo", fetchBankAccount.getAccountNum());
-
         // scenariooo 2
-
-
+        Login_Account.signUp(conn, "besela", "dodo", "dodo", fetchBankAccount.getAccountNum());
         Pair<Login_Account,Integer> SignInAcc = Login_Account.signIn(conn, "besela", "dodo");
         Login = SignInAcc.getKey();
         assert Login != null;

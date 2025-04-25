@@ -1,4 +1,5 @@
 package def_pkg;
+import javafx.util.Pair;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,6 +33,7 @@ class Login_AccountTest {
 
     private static Bank_Account bankAccount;
     private static Client client;
+    private static Client clientB;
     Manager manager;
 
     @BeforeEach
@@ -40,11 +42,15 @@ class Login_AccountTest {
         client = new Client("John", "Doe", "Michael", "Sarah",
                 "12345-6789012-3", "1/1/2004", "0123456789",
                 "john@example.com", "123 Street");
+        clientB = new Client("mablook", "metblk", "mablook", "mablooka",
+                "1234", "1/1/2004", "0123456789",
+                "jdj.com", "123 Street");
         manager = new Manager("sallam");
 
         bankAccount = new Bank_Account("5", "50", null, "Saving",
                 "1000", "Active", "2024-01-01");
     }
+
     @AfterAll
     public static void tearDown() throws SQLException {
         // Clean up references
@@ -162,16 +168,14 @@ class Login_AccountTest {
         }
     }
 
-
     @DisplayName("signin with non-existent account")
     @Test
     void signInFailure_no_account() {
         try {
-            // Attempt to sign in with incorrect credentials
-            Login_Account account = Login_Account.signIn(conn, "invalidUser", "wrongPass").getKey();
+            Pair<Login_Account, Integer> result = Login_Account.signIn(conn, "invalidUser", "wrongPass");
 
-            // Expecting null since the credentials are invalid
-            assertNull(account, "Expected null for invalid credentials but got an account");
+            assertNull(result.getKey(), "Expected null for invalid credentials but got an account");
+            assertEquals(0, result.getValue(), "Expected value 0 for failed login");
         } catch (SQLException e) {
             fail("SQLException occurred: " + e.getMessage());
         }
@@ -181,11 +185,10 @@ class Login_AccountTest {
     @Test
     void signInFailure_wrong_password() {
         try {
-            // Attempt to sign in with incorrect credentials
-            Login_Account account = Login_Account.signIn(conn, "medhat", "wrongPass").getKey();
+            Pair<Login_Account, Integer> result = Login_Account.signIn(conn, "medhat", "wrongPass");
 
-            // Expecting null since the credentials are invalid
-            assertNull(account, "Expected null for invalid credentials but got an account");
+            assertNull(result.getKey(), "Expected null for invalid credentials but got an account");
+            assertEquals(0, result.getValue(), "Expected value 0 for failed login");
         } catch (SQLException e) {
             fail("SQLException occurred: " + e.getMessage());
         }
@@ -193,16 +196,84 @@ class Login_AccountTest {
 
     @DisplayName("signin with correct credentials")
     @Test
-    void signInsuccess() {
+    void signInSuccess() {
         try {
+            Pair<Login_Account, Integer> result = Login_Account.signIn(conn, "MohAshraf", "Ashraf");
 
-            Login_Account account = Login_Account.signIn(conn, "MohAshraf", "Ashraf").getKey();/////////exist in database
-            assertNotNull(account);
-            assertEquals("MohAshraf", account.getUsername());  // Ensure ID or Username
+            assertNotNull(result.getKey(), "Expected non-null account for valid credentials");
+            assertEquals("MohAshraf", result.getKey().getUsername(), "Username does not match");
+            assertEquals(1, result.getValue(), "Expected login status value 1 for successful login");
         } catch (SQLException e) {
             fail("SQLException occurred: " + e.getMessage());
         }
     }
+
+    @DisplayName("signin with blocked user account (status = 2)")
+    @Test
+    void signInBlockedAccount() {
+        try {
+            // This user should exist with status = 2 in bank_account table
+            {
+//        try {
+                manager.createAccount(conn, clientB, "Saving");
+                Bank_Account acc = Bank_Account.getByClientId(conn, clientB.getClientID());
+
+
+                String username = "BlockedUser";
+                String pass = "B12";
+                assert acc != null;
+                String accNum = acc.getAccountNum(); // existing bank_account
+                int result = Login_Account.signUp(conn, username, pass, pass, accNum);
+                assertEquals(0, result, "Signup should succeed with a valid account number");
+                manager.blockAccount(conn,acc);
+
+            }
+            Pair<Login_Account, Integer> result = Login_Account.signIn(conn, "BlockedUser", "B12");
+
+            assertNotNull(result.getKey(), "Expected a valid Login_Account for blocked user");
+            assertEquals("BlockedUser", result.getKey().getUsername(), "Username mismatch");
+            assertEquals(2, result.getValue(), "Expected value 2 for blocked account");
+
+            String sql = "DELETE FROM bank_account where client_id=?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                pstmt.setString(1, clientB.getClientID());
+                pstmt.executeUpdate();
+            }
+
+            String sql2 = "DELETE FROM client where client_id=?";
+            try (PreparedStatement pstmt2 = conn.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS)) {
+                pstmt2.setString(1, clientB.getClientID());
+                pstmt2.executeUpdate();
+            }
+
+            String sql3 = "DELETE FROM login_account where username=?";
+            try (PreparedStatement pstmt3 = conn.prepareStatement(sql3, Statement.RETURN_GENERATED_KEYS)) {
+                pstmt3.setString(1, result.getKey().getUsername());
+                pstmt3.executeUpdate();
+            }
+
+
+        } catch (SQLException e) {
+            fail("SQLException occurred: " + e.getMessage());
+        }
+    }
+
+    @DisplayName("signin with manager account (type = M)")
+    @Test
+    void signInManagerAccount() {
+        try {
+            // This user should exist with type = 'M' in login_account table
+            Pair<Login_Account, Integer> result = Login_Account.signIn(conn, "Abdelrahman20", "Sallam");
+
+            assertNotNull(result.getKey(), "Expected a valid Login_Account for manager");
+            assertEquals("Abdelrahman20", result.getKey().getUsername(), "Username mismatch");
+            assertEquals("Manager", result.getKey().getType(), "Expected user type 'M' for manager");
+            assertEquals(1, result.getValue(), "Expected value 1 for successful login");
+        } catch (SQLException e) {
+            fail("SQLException occurred: " + e.getMessage());
+        }
+    }
+
 
 
     @DisplayName("verify AccountFailure wrong CNIC")
