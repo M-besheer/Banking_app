@@ -125,7 +125,7 @@ class ManagerTest {
         }
 
         @Test
-        @Order(3)
+        @Order(4)
         @DisplayName("unblock with miss matching cnic")
         void unblockAccountWithWrongCNIC() throws SQLException {
             manager.createAccount(conn, testClient, "Saving");
