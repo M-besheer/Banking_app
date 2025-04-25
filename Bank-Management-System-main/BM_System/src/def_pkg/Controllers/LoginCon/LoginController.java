@@ -39,11 +39,23 @@ public class LoginController {
 
     @FXML
     private void handleLogin() {
+        String username = usernameField.getText().trim();
+        String pass = passwordField.getText().trim();
+
+        if(username.isEmpty() || pass.isEmpty()){
+            shakePanel(loginPanel);
+            loginerrorlabel.setText("Please enter all fields!");
+            loginerrorlabel.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-background-radius: 5;");
+            loginerrorlabel.setVisible(true);
+            showError("Please enter all fields!");
+            return;
+        }
+
         try (DB_handler db = new DB_handler()) {
             Connection conn = db.getConnection();
             Pair<Login_Account,Integer> loggedInUser = Login_Account.signIn(conn,
-                    usernameField.getText(),
-                    passwordField.getText()
+                    username,
+                    pass
             );
             Login_Account loginAccount = loggedInUser.getKey();
             int blockedStatus = loggedInUser.getValue();

@@ -46,6 +46,18 @@ public class Signup1Controller {
 
     @FXML
     private void handleVerify() {
+        String acc = accountNumberField.getText().trim();
+        String cnic = cnicField.getText().trim();
+
+        if(acc.isEmpty() || cnic.isEmpty()){
+            shakePanel(signupPanel);
+            errorLabel.setText("Please enter all fields!");
+            errorLabel.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-background-radius: 5;");
+            errorLabel.setVisible(true);
+            showError("Please enter all fields!");
+            return;
+        }
+
         try (DB_handler db = new DB_handler()) {
             Connection conn = db.getConnection();
             boolean isValid = Login_Account.verifyAccount(conn,
