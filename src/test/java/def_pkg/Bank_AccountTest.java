@@ -26,7 +26,7 @@ class Bank_AccountTest {
             throw new IllegalStateException("Unable to connect to the database. " + e.getMessage());
         }
 
-        TestManager = new Manager();
+        TestManager = new Manager("");
         TestClient = new Client("Test_f_name", "Test_l_name", "Test_father_name",
                 "Test_mother_name", "12345", "1/2/2000", "01000000000",
                 "test@gmail.com", "testAddress");

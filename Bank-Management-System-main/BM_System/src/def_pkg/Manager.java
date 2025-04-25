@@ -8,9 +8,9 @@ import java.util.Objects;
 public class Manager {
 	private String name;
 
-	public Manager() {
-		this.name = "";
-	}
+//	public Manager() {
+//		this.name = "";
+//	}
 
 	public Manager(String name) {
 		this.name = name;
@@ -22,34 +22,27 @@ public class Manager {
 
 	// Account management operations
 	public int createAccount(Connection conn, Client newClient, String type) throws SQLException {
-		try {
-			conn.setAutoCommit(false);
+		conn.setAutoCommit(false);
 
-			// Check if client exists
-			Client existingClient = Client.getByCNIC(conn, newClient.getCNIC());
-			if (existingClient == null) {
-				newClient.save(conn);
-				existingClient = newClient;
+		Client existingClient = Client.getByCNIC(conn, newClient.getCNIC());
+		if (existingClient == null) {
+			newClient.save(conn);
+			existingClient = newClient;
 
-
-				// Create new account
-				String sql = "INSERT INTO bank_account (client_id, type, balance, status, opening_date) "
-						+ "VALUES (?, ?, 0, 1, CURDATE())";
-				try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-					pstmt.setString(1, existingClient.getClientID());
-					pstmt.setString(2, type);
-					pstmt.executeUpdate();}
-
-				conn.commit();
-				return 0;
+			String sql = "INSERT INTO bank_account (client_id, type, balance, status, opening_date) "
+					+ "VALUES (?, ?, 0, 1, CURDATE())";
+			try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+				pstmt.setString(1, existingClient.getClientID());
+				pstmt.setString(2, type);
+				pstmt.executeUpdate();
 			}
-			else return 1;
-		} catch (SQLException e) {
-			conn.rollback();
-			throw e;
-		}
-		finally {
+
+			conn.commit();
 			conn.setAutoCommit(true);
+			return 0;
+		} else {
+			conn.setAutoCommit(true);
+			return 1;
 		}
 	}
 
@@ -65,14 +58,13 @@ public class Manager {
 							pstmt.setInt(1, Integer.parseInt(acc.getAccountNum()));
 							int affected = pstmt.executeUpdate();
 							acc.setStatus("2");
-							return 1;  // Change occurred, account blocked
+							return 1;
 						}
 					} else {
-						return 0;  //No change, account already blocked
+						return 0;
 					}
-				}
-				else {
-					return 2;  //Account doesnt exist
+				} else {
+					return 2;
 				}
 			}
 		}
@@ -90,14 +82,13 @@ public class Manager {
 							pstmt.setInt(1, Integer.parseInt(acc.getAccountNum()));
 							int affected = pstmt.executeUpdate();
 							acc.setStatus("1");
-							return 1; // Change occurred, account blocked
+							return 1;
 						}
 					} else {
-						return 0; //No change, account already blocked
+						return 0;
 					}
-				}
-				else {
-					return 2; //Account doesnt exist
+				} else {
+					return 2;
 				}
 			}
 		}
@@ -122,11 +113,13 @@ public class Manager {
 							rs.getString("email"),
 							rs.getString("address")
 					);
-				}}}
+				}
+			}
+		}
 		return null;
 	}
 
-	public void updateClientInfo(Connection conn, String clientId, String phone,  String email, String address) throws SQLException {
+	public void updateClientInfo(Connection conn, String clientId, String phone, String email, String address) throws SQLException {
 		String sql = "UPDATE client SET phone = ?, email = ?, address = ? WHERE client_id = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, phone);
@@ -137,26 +130,23 @@ public class Manager {
 		}
 	}
 
-	public int getTotalAccounts(Connection conn,Manager manager) throws SQLException {
+	public int getTotalAccounts(Connection conn, Manager manager) throws SQLException {
 		String sql = "SELECT COUNT(*) AS total_accounts FROM bank_account";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql);
 			 ResultSet rs = pstmt.executeQuery()) {
 			if (rs.next()) {
-				int totalAccounts = rs.getInt("total_accounts");
-				System.out.println("Total accounts in the system: " + totalAccounts);
-				return totalAccounts;
-			}}
-		return 0; // Default value if no rows are found
+				return rs.getInt("total_accounts");
+			}
+		}
+		return 0;
 	}
 
-	public int getTotalEmployees(Connection conn,Manager manager) throws SQLException {
+	public int getTotalEmployees(Connection conn, Manager manager) {
 		String sql = "SELECT COUNT(*) AS total_employees FROM employee";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql);
 			 ResultSet rs = pstmt.executeQuery()) {
 			if (rs.next()) {
-				int totalEmployees = rs.getInt("total_employees");
-				System.out.println("Total Employees in the system: " + totalEmployees);
-				return totalEmployees;
+				return rs.getInt("total_employees");
 			}
 		}
 		catch (SQLException e) {
