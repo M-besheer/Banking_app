@@ -56,35 +56,44 @@ public class BlockUnblockController {
                  messagelabel.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-font-weight: bold; -fx-font-size: 18;");
                  return;
              }
+
              Bank_Account acc = Bank_Account.getByAccountNumber(conn,accnum);
-             String cnic = client.getCNIC();
-             if("1".equals(acc.getStatus())){
-                 if (action.equals("Block")) {
-                     manager.blockAccount(conn, acc, cnic);
-                     messagelabel.setText("Account blocked successfully!");
-                     messagelabel.setStyle("-fx-text-fill: white; -fx-background-color: green; -fx-font-weight: bold; -fx-font-size: 18;");
 
-                 }
-                 else if (action.equals("Unblock")) {
-                     messagelabel.setText("Account already unblocked");
-                     messagelabel.setStyle("-fx-text-fill: white; -fx-background-color: orange; -fx-font-weight: bold; -fx-font-size: 18;");
-
-                 }
-             }
-             else if("2".equals(acc.getStatus())){
-                 if (action.equals("Block")) {
+             if (action.equals("Block")) {
+                 int blockingStatus = manager.blockAccount(conn, acc);
+                 if (blockingStatus == 0)
+                 {
                      messagelabel.setText("Account already blocked");
                      messagelabel.setStyle("-fx-text-fill: white; -fx-background-color: orange; -fx-font-weight: bold; -fx-font-size: 18;");
-
                  }
-                 else if (action.equals("Unblock")) {
-                     manager.unblockAccount(conn, acc, cnic);
-                     messagelabel.setText("Account unblocked successfully!");
+                 else if (blockingStatus == 1)
+                 {
+                     messagelabel.setText("Account blocked successfully!");
                      messagelabel.setStyle("-fx-text-fill: white; -fx-background-color: green; -fx-font-weight: bold; -fx-font-size: 18;");
+                 }
+                 else if (blockingStatus == 2)
+                 {
 
                  }
              }
+             else if (action.equals("Unblock"))
+             {
+                 int blockingStatus = manager.unblockAccount(conn, acc);
+                 if (blockingStatus == 0)
+                 {
+                     messagelabel.setText("Account already unblocked");
+                     messagelabel.setStyle("-fx-text-fill: white; -fx-background-color: orange; -fx-font-weight: bold; -fx-font-size: 18;");
+                 }
+                 else if (blockingStatus == 1)
+                 {
+                     messagelabel.setText("Account unblocked successfully!");
+                     messagelabel.setStyle("-fx-text-fill: white; -fx-background-color: green; -fx-font-weight: bold; -fx-font-size: 18;");
+                 }
+                 else if (blockingStatus == 2)
+                 {
 
+                 }
+             }
          } catch (SQLException e) {
              throw new RuntimeException(e);
          }

@@ -75,19 +75,6 @@ class ManagerTest {
     }
 
 
-    @Test
-    @Order(3)
-    void verifyAccountOwnership() throws SQLException {
-        manager.createAccount(conn, testClient, "Saving");
-        Bank_Account acc = Bank_Account.getByClientId(conn, testClient.getClientID());
-        assertNotNull(acc);
-        boolean bool = manager.verifyAccountOwnership(conn, Integer.parseInt(acc.getAccountNum()),testClient.getCNIC());
-        assertTrue(bool);
-        bool = manager.verifyAccountOwnership(conn, Integer.parseInt(acc.getAccountNum()),testClient.getClientID());
-        assertFalse(bool);
-        bool = manager.verifyAccountOwnership(conn, Integer.parseInt(acc.getStatus()),testClient.getCNIC());
-        assertFalse(bool);
-    }
 
 
 
@@ -103,7 +90,7 @@ class ManagerTest {
             Bank_Account acc = Bank_Account.getByClientId(conn, testClient.getClientID());
 
             assert acc != null;
-            int blockResult = manager.blockAccount(conn, acc, testClient.getCNIC());
+            int blockResult = manager.blockAccount(conn, acc);
             assertEquals(0, blockResult);
 
             assertEquals("2", acc.getStatus());
@@ -116,11 +103,11 @@ class ManagerTest {
             manager.createAccount(conn, testClient, "Saving");
             Bank_Account acc = Bank_Account.getByClientId(conn, testClient.getClientID());
             assert acc != null;
-            int blockResult = manager.blockAccount(conn, acc, testClient.getCNIC());
+            int blockResult = manager.blockAccount(conn, acc);
             assertEquals(0, blockResult);
             assertEquals("2", acc.getStatus());
 
-            int unblockResult = manager.unblockAccount(conn, acc, testClient.getCNIC());
+            int unblockResult = manager.unblockAccount(conn, acc);
             assertEquals(0, unblockResult);
             assertEquals("1", acc.getStatus());
         }
@@ -132,7 +119,7 @@ class ManagerTest {
             manager.createAccount(conn, testClient, "Saving");
             Bank_Account acc = Bank_Account.getByClientId(conn, testClient.getClientID());
             assert acc != null;
-            int blockResult = manager.blockAccount(conn, acc, testClient.getClientID());
+            int blockResult = manager.blockAccount(conn, acc);
             assertEquals(-1, blockResult);
             assertEquals("1", acc.getStatus());
         }
@@ -144,11 +131,11 @@ class ManagerTest {
             manager.createAccount(conn, testClient, "Saving");
             Bank_Account acc = Bank_Account.getByClientId(conn, testClient.getClientID());
             assert acc != null;
-            int blockResult = manager.blockAccount(conn, acc, testClient.getCNIC());
+            int blockResult = manager.blockAccount(conn, acc);
             assertEquals(0, blockResult);
             assertEquals("2", acc.getStatus());
 
-            int unblockResult = manager.unblockAccount(conn, acc, testClient.getClientID());
+            int unblockResult = manager.unblockAccount(conn, acc);
             assertEquals(-1, unblockResult);
             assertEquals("2", acc.getStatus());
 

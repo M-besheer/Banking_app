@@ -53,51 +53,56 @@ public class Manager {
 		}
 	}
 
-	public int blockAccount(Connection conn, Bank_Account acc, String cnic) throws SQLException {
-		if (!verifyAccountOwnership(conn, Integer.parseInt(acc.getAccountNum()), cnic)) {
-			return -1;
-		}
+	public int blockAccount(Connection conn, Bank_Account acc) throws SQLException {
 
-		String sql = "UPDATE bank_account SET status = 2 WHERE acc_num = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, Integer.parseInt(acc.getAccountNum()));
-			int affected = pstmt.executeUpdate();
-
-			if (affected > 0) {
-				acc.setStatus("2"); // directly update the same object
-			}
-			return affected > 0 ? 0 : -2;
-		}
-	}
-
-	public int unblockAccount(Connection conn, Bank_Account acc, String cnic) throws SQLException {
-		if (!verifyAccountOwnership(conn, Integer.parseInt(acc.getAccountNum()), cnic)) {
-			return -1; // CNIC doesn't match
-		}
-
-		String sql = "UPDATE bank_account SET status = 1 WHERE acc_num = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, Integer.parseInt(acc.getAccountNum()));
-			int affected = pstmt.executeUpdate();
-
-			if (affected > 0) {
-				acc.setStatus("1");
-			}
-			return affected > 0 ? 0 : -2; // -2 if no rows affected
-		}
-	}
-
-	boolean verifyAccountOwnership(Connection conn, int accNum, String cnic) throws SQLException {
-		String sql = "SELECT c.CNIC FROM client c "
-				+ "JOIN bank_account ba ON c.client_id = ba.client_id "
-				+ "WHERE ba.acc_num = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, accNum);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				return rs.next() && rs.getString("CNIC").equals(cnic);
+		String sql2 = "SELECT status FROM bank_account WHERE acc_num = ?";
+		try (PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
+			pstmt2.setString(1, acc.getAccountNum());
+			try (ResultSet rs2 = pstmt2.executeQuery()) {
+				if (rs2.next()) {
+					if (rs2.getInt("status") == 1) {
+						String sql = "UPDATE bank_account SET status = 2 WHERE acc_num = ?";
+						try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+							pstmt.setInt(1, Integer.parseInt(acc.getAccountNum()));
+							int affected = pstmt.executeUpdate();
+							acc.setStatus("2");
+							return 1;  // Change occurred, account blocked
+						}
+					} else {
+						return 0;  //No change, account already blocked
+					}
+				} else {
+					return 2;  //Account doesnt exist
+				}
 			}
 		}
 	}
+
+	public int unblockAccount(Connection conn, Bank_Account acc) throws SQLException {
+
+		String sql2 = "SELECT status FROM bank_account WHERE acc_num = ?";
+		try (PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
+			pstmt2.setString(1, acc.getAccountNum());
+			try (ResultSet rs2 = pstmt2.executeQuery()) {
+				if (rs2.next()) {
+					if (rs2.getInt("status") == 2) {
+						String sql = "UPDATE bank_account SET status = 1 WHERE acc_num = ?";
+						try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+							pstmt.setInt(1, Integer.parseInt(acc.getAccountNum()));
+							int affected = pstmt.executeUpdate();
+							acc.setStatus("1");
+							return 1; // Change occurred, account blocked
+						}
+					} else {
+						return 0; //No change, account already blocked
+					}
+				} else {
+					return 2; //Account doesnt exist
+				}
+			}
+		}
+	}
+
 
 	// Information retrieval methods
 	public Client getClientInfo(Connection conn, String accNum) throws SQLException {
