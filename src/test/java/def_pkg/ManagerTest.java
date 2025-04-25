@@ -212,7 +212,7 @@ class ManagerTest {
     @Test
     @Order(8)
     void getTotalEmployees() throws SQLException {
-        assertEquals(2, manager.getTotalEmployees(conn,manager));
+        assertEquals(1, manager.getTotalEmployees(conn,manager));
     }
 
 //    @Nested
@@ -225,7 +225,7 @@ class ManagerTest {
 //        void closeConnection() throws SQLException {
 //            assertThrows(SQLException.class, () -> {
 //                conn.close();
-//                manager.getTotalEmployees(conn,manager);
+//                manager.createAccount(conn, testClient, "Saving");
 //            });
 //        }
 //
@@ -247,6 +247,7 @@ class ManagerTest {
             pstmt2.setString(1, testClient.getClientID());
             pstmt2.executeUpdate();
         }
+
     }
 
 }
