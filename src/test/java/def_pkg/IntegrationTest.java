@@ -117,7 +117,7 @@ public class IntegrationTest {
         assertEquals("2500",fetchBankAccount.getBalance());
 
         //manager blocks the account
-        int blockResult = manager.blockAccount(conn, fetchBankAccount, client1.getCNIC());
+        int blockResult = manager.blockAccount(conn, fetchBankAccount);
         assertEquals(0,blockResult);
         assertEquals("2",fetchBankAccount.getStatus());
 
