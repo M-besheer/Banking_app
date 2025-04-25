@@ -12,15 +12,6 @@ public class Bank_Account {
 	private String opening_date;
 
 
-	public Bank_Account() {
-		acc_num = "";
-		client_id = "";
-		login_id = "";
-		type = "";
-		balance = "";
-		status = "";
-		opening_date = "";
-	}
 
 	public Bank_Account(String acc_num, String client_id, String login_id, String type,
 						String balance, String status, String opening_date) {
@@ -33,39 +24,7 @@ public class Bank_Account {
 		this.opening_date = opening_date;
 	}
 
-	public Bank_Account(String accNum, String type, String balance, String status, String openingDate) {
-		this.acc_num = accNum;
-		this.type = type;
-		this.balance = balance;
-		this.status = status;
-		this.opening_date = openingDate;
-	}
-	@Override
-	public String toString() {
-		return String.format(
-				"Account Number: %s%n" +
-						"Client ID: %s%n" +
-						"Login ID: %s%n" +
-						"Type: %s%n" +
-						"Balance: %s%n" +
-						"Status: %s%n" +
-						"Opening Date: %s",
-				acc_num, client_id, login_id, type, balance, status, opening_date
-		);
-	}
 
-	private Connection establishConnection() {
-		String url = "jdbc:mysql://localhost:3306/bank_schema";
-		String username = "root";
-		String password = "";
-		try {
-			Connection connection = DriverManager.getConnection(url, username, password);
-			System.out.println("Connection established successfully!");
-			return connection;
-		} catch (SQLException e) {
-			throw new IllegalStateException("Unable to connect to the database. " + e.getMessage());
-		}
-	}
 	// Getters
 	public String getAccountNum() { return acc_num; }
 	public String getClientId() { return client_id; }
