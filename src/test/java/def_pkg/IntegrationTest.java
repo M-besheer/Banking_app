@@ -6,16 +6,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IntegrationTest {
     private Connection conn;
-
+    Client client1;
+    Login_Account Login;
     @BeforeEach
     void setUp() {
         conn = establishConnection();
@@ -38,6 +37,27 @@ public class IntegrationTest {
     }
     @AfterEach
     void tearDown() throws SQLException {
+
+        String sql = "DELETE FROM bank_account where client_id=?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, client1.getClientID());
+            pstmt.executeUpdate();
+        }
+
+        String sql2 = "DELETE FROM client where client_id=?";
+        try (PreparedStatement pstmt2 = conn.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt2.setString(1, client1.getClientID());
+            pstmt2.executeUpdate();
+        }
+
+        String sql3 = "DELETE FROM login_account where username=?";
+        try (PreparedStatement pstmt3 = conn.prepareStatement(sql3, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt3.setString(1, Login.getUsername());
+            pstmt3.executeUpdate();
+        }
+
+
+
         if (conn != null && !conn.isClosed()) {
             conn.close();
         }
@@ -52,7 +72,7 @@ public class IntegrationTest {
         assertEquals("Manager", manager_login_acc.getType());
         Manager manager = new Manager(Login_Account.getEmployeeName(conn, manager_login_acc.getLoginId()));
 
-        Client client1 = new Client("Andrew", "Basilly", "Ramy",
+        client1 = new Client("Andrew", "Basilly", "Ramy",
                 "Mom", "30501316106716", "30/06/2004", "01026065412",
                 "andresramesbaseles@gmail.com", "Almaza");
         manager.createAccount(conn, client1, "Current");
@@ -66,65 +86,36 @@ public class IntegrationTest {
         Login_Account.signUp(conn, "besela", "dodo", "dodo", fetchBankAccount.getAccountNum());
 
         // scenariooo 2
-        Login_Account Login = Login_Account.signIn(conn, "besela", "dodo").getKey();
-        assertEquals("besela", Login.getUsername());
-        client1.depositMoney(conn,fetchBankAccount.getAccountNum(),2000);
-        assertEquals("2000",fetchBankAccount.getBalance());
-        client1.transferMoney(conn,"500000",500);
-        assertEquals("1500",fetchBankAccount.getBalance());
 
 
-    }
-
-    @Test
-    @Order(2)
-    void test2() throws SQLException {
-
-        //the manager is signing in
-        Login_Account manager_login_acc = Login_Account.signIn(conn, "Abdelrahman20", "Sallam").getKey();
-        assertEquals("60000", manager_login_acc.getLoginId());
-        assertEquals("Abdelrahman20", manager_login_acc.getUsername());
-        assertEquals("Manager", manager_login_acc.getType());
-        Manager manager = new Manager(Login_Account.getEmployeeName(conn, manager_login_acc.getLoginId()));
-
-        //creating new Bank Account for a new Client
-        Client client1 = new Client("Martin", "Wadie", "Magued",
-                "Mom", "3040916010382", "16/09/2004", "01026065412",
-                "martinmagued@gmail.com", "El-Rehab");
-        manager.createAccount(conn, client1, "Saving");
-        Client fetchClient = Client.getByCNIC(conn, "3040916010382");
-        assertEquals("Martin",fetchClient.getFName());
-        assertEquals("El-Rehab",fetchClient.getAddress());
-
-        Bank_Account fetchBankAccount = Bank_Account.getByClientId(conn,fetchClient.getClientID());
-        assert fetchBankAccount != null;
-        assertEquals(fetchBankAccount.getClientId(),fetchClient.getClientID());
-        assertEquals(fetchBankAccount.getStatus(),"1");
-
-        //The new client is creating a login account then sign in
-        Login_Account.signUp(conn,"Martino","tino123","tino123", fetchBankAccount.getAccountNum());
-        Pair<Login_Account,Integer> SignInAcc = Login_Account.signIn(conn, "Martino", "tino123");
-        Login_Account Login = SignInAcc.getKey();
+        Pair<Login_Account,Integer> SignInAcc = Login_Account.signIn(conn, "besela", "dodo");
+        Login = SignInAcc.getKey();
         assert Login != null;
         int Status = SignInAcc.getValue();
 
-        assertEquals("Martino",Login.getUsername());
+        assertEquals("besela",Login.getUsername());
         assertEquals(1,Status);
 
-        client1.depositMoney(conn,fetchBankAccount.getAccountNum(),3000);
-        assertEquals("3000",fetchBankAccount.getBalance());
+        client1.depositMoney(conn,fetchBankAccount.getAccountNum(),2000);
+        fetchBankAccount = Bank_Account.getByClientId(conn,fetchClient.getClientID());
+        assertEquals("2000",fetchBankAccount.getBalance());
         client1.transferMoney(conn,"500000",500);
-        assertEquals("2500",fetchBankAccount.getBalance());
+        fetchBankAccount = Bank_Account.getByClientId(conn,fetchClient.getClientID());
+        assertEquals("1500",fetchBankAccount.getBalance());
+
+
 
         //manager blocks the account
         int blockResult = manager.blockAccount(conn, fetchBankAccount);
-        assertEquals(0,blockResult);
+        assertEquals(1,blockResult);
         assertEquals("2",fetchBankAccount.getStatus());
 
         //client is trying to login again
-        SignInAcc = Login_Account.signIn(conn,"Martino", "tino123");
+        SignInAcc = Login_Account.signIn(conn,"besela", "dodo");
         assertEquals(2, SignInAcc.getValue());
 
     }
+
+
 }
 
