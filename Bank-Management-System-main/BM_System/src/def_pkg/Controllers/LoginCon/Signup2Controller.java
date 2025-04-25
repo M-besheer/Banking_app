@@ -66,7 +66,16 @@ public class Signup2Controller {
     private void handleCreateAccount() {
         String pass1 = passwordField.getText();
         String pass2 = confirmPasswordField.getText();
+        String newusername = usernameField.getText();
 
+        if(pass1.isEmpty() || newusername.isEmpty()){
+            bouncePanel(createPanel);
+            usererrorLabel.setText("Missing fields required!");
+            usererrorLabel.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-background-radius: 5;");
+            usererrorLabel.setVisible(true);
+            showError("Please enter all fields!");
+            return;
+        }
         if (strengthBar.getProgress() < 0.7) { // 70% strength threshold
             bouncePanel(createPanel);
             usererrorLabel.setVisible(true);
@@ -75,16 +84,18 @@ public class Signup2Controller {
             showError("Password is too weak! Please choose a stronger password.");
             return;
         }
+        if(pass2.isEmpty()){
+            bouncePanel(createPanel);
+            usererrorLabel.setText("Please confirm your password!");
+            usererrorLabel.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-background-radius: 5;");
+            usererrorLabel.setVisible(true);
+            showError("missing confirmation password field!");
+            return;
+        }
 
         try (DB_handler db = new DB_handler()) {
             Connection conn = db.getConnection();
-            int result = Login_Account.signUp(
-                    conn,
-                    usernameField.getText(),
-                    pass1,
-                    pass2,
-                    accountNumber
-            );
+            int result = Login_Account.signUp(conn, newusername, pass1, pass2, accountNumber);
 
             if (result == 0) {
                 showSuccess("Account created successfully!");
@@ -127,7 +138,6 @@ public class Signup2Controller {
         return switch (code) {
             case -1 -> "Passwords mismatch";
             case -2 -> "Account already exists!";
-
             default -> "Unknown error";
         };
     }

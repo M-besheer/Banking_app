@@ -95,7 +95,7 @@ class ManagerTest {
 
 
     @Nested
-    @Order(4)
+    @Order(3)
     @DisplayName("block and unblock account test")
     class Block_Unblock_Account {
         @Test
@@ -206,13 +206,11 @@ class ManagerTest {
             }
         }
 
-
-
     }
 
 
     @Nested
-    @Order(5)
+    @Order(4)
     @DisplayName("Get Client Info Test")
     class Get_Client_Info {
         @Test
@@ -238,7 +236,7 @@ class ManagerTest {
     }
 
     @Test
-    @Order(6)
+    @Order(5)
     @DisplayName("Update Client Info")
     void updateClientInfo() throws SQLException {
         manager.createAccount(conn, testClient, "Saving");
@@ -256,7 +254,7 @@ class ManagerTest {
     }
 
     @Test
-    @Order(7)
+    @Order(6)
     void getTotalAccounts() throws SQLException {
         int count = manager.getTotalAccounts(conn,manager);
         manager.createAccount(conn, testClient, "Saving");
@@ -264,7 +262,7 @@ class ManagerTest {
     }
 
     @Test
-    @Order(8)
+    @Order(7)
     void getTotalEmployees() throws SQLException {
         assertEquals(1, manager.getTotalEmployees(conn,manager));
     }
@@ -305,6 +303,7 @@ class ManagerTest {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Nested
+    @Order(8)
     @DisplayName("Exceptional Rollback & Error Paths")
     class ExceptionalPaths {
 

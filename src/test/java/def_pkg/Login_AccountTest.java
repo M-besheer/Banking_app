@@ -356,5 +356,32 @@ class Login_AccountTest {
         }
     }
 
+    @DisplayName("getByUsername - existing user")
+    @Test
+    void getByUsernameExists() {
+        try {
+            // Assume this user exists in your DB with a known login_id and type
+            Login_Account account = Login_Account.getByUsername(conn, "MohAshraf");
+
+            assertNotNull(account, "Expected a valid Login_Account object");
+            assertEquals("MohAshraf", account.getUsername(), "Username mismatch");
+            assertNotNull(account.getType(), "Type should not be null");
+        } catch (SQLException e) {
+            fail("SQLException occurred: " + e.getMessage());
+        }
+    }
+    @DisplayName("getByUsername - non-existent user")
+    @Test
+    void getByUsernameDoesNotExist() {
+        try {
+            Login_Account account = Login_Account.getByUsername(conn, "NonExistentUser123");
+
+            assertNull(account, "Expected null for non-existent username");
+        } catch (SQLException e) {
+            fail("SQLException occurred: " + e.getMessage());
+        }
+    }
+
 
 }
+
