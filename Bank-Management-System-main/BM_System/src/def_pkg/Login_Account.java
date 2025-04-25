@@ -39,13 +39,48 @@ public class Login_Account {
 			pstmt.setString(2, password);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
-					return new Login_Account(
-							rs.getString("login_id"),
-							username,
-							"", // Empty password for security
-							rs.getString("type"));
-				}}}
-		return null;
+					if (!rs.wasNull()) {
+						if(Objects.equals(rs.getString("type"), "M"))
+						{
+							return new Pair<>(new Login_Account(
+									rs.getString("login_id"),
+									username,
+									"", // Empty password for security
+									rs.getString("type")
+							), 1);
+						}
+						else
+						{
+							String sql2 = "SELECT status FROM bank_account where login_id=?";
+							try (PreparedStatement pstmt2 = conn.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS)) {
+								System.out.println(rs.getString("login_id"));
+								pstmt2.setString(1, rs.getString("login_id"));
+								try (ResultSet rs2 = pstmt2.executeQuery()) {
+									if (rs2.next()) {
+										if (rs2.getInt("status") == 1) {
+											return new Pair<>(new Login_Account(
+													rs.getString("login_id"),
+													username,
+													"", // Empty password for security
+													rs.getString("type")
+											), 1);
+										} else if (rs2.getInt("status") == 2) {
+											return new Pair<>(new Login_Account(
+													rs.getString("login_id"),
+													username,
+													"", // Empty password for security
+													rs.getString("type")
+											), 2);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return new Pair<>(null,0);
 	}
 
 
@@ -121,47 +156,15 @@ public class Login_Account {
 			pstmt.setString(1, username);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
-					if (!rs.wasNull()) {
-						if(Objects.equals(rs.getString("type"), "M"))
-						{
-							return new Pair<>(new Login_Account(
-									rs.getString("login_id"),
-									username,
-									"", // Empty password for security
-									rs.getString("type")
-							), 1);
-						}
-						else
-						{
-							String sql2 = "SELECT status FROM bank_account where login_id=?";
-							try (PreparedStatement pstmt2 = conn.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS)) {
-								System.out.println(rs.getString("login_id"));
-								pstmt2.setString(1, rs.getString("login_id"));
-								try (ResultSet rs2 = pstmt2.executeQuery()) {
-									if (rs2.next()) {
-										if (rs2.getInt("status") == 1) {
-											return new Pair<>(new Login_Account(
-													rs.getString("login_id"),
-													username,
-													"", // Empty password for security
-													rs.getString("type")
-											), 1);
-										} else if (rs2.getInt("status") == 2) {
-											return new Pair<>(new Login_Account(
-													rs.getString("login_id"),
-													username,
-													"", // Empty password for security
-													rs.getString("type")
-											), 2);
-										}
-									}
-								}
-							}
-						}
-					}
+					return new Login_Account(
+							rs.getString("login_id"),
+							username,
+							"", // Empty password for security
+							rs.getString("type")
+					);
 				}
 			}
 		}
-		return new Pair<>(null,0);
+		return null;
 	}
 }

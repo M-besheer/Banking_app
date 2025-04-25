@@ -45,7 +45,7 @@ public class IntegrationTest {
     @Test
     @Order(1)
     void Test1() throws SQLException {
-        Login_Account manager_login_acc = Login_Account.signIn(conn, "Abdelrahman20", "Sallam");
+        Login_Account manager_login_acc = Login_Account.signIn(conn, "Abdelrahman20", "Sallam").getKey();
         assertEquals("60000", manager_login_acc.getLoginId());
         assertEquals("Abdelrahman20", manager_login_acc.getUsername());
         assertEquals("Manager", manager_login_acc.getType());
@@ -66,7 +66,7 @@ public class IntegrationTest {
         Login_Account.signUp(conn, "besela", "dodo", "dodo", fetchBankAccount.getAccountNum());
 
         // scenariooo 2
-        Login_Account Login = Login_Account.signIn(conn, "besela", "dodo");
+        Login_Account Login = Login_Account.signIn(conn, "besela", "dodo").getKey();
         assertEquals("besela", Login.getUsername());
         client1.depositMoney(conn,fetchBankAccount.getAccountNum(),2000);
         client1.transferMoney(conn,"500000",500);
