@@ -6,9 +6,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.sql.*;
 
 
-class Login_AccountTest {
+class Login_AccountWHITEBOXTest {
 
     static Connection conn;
+
 
     @BeforeAll
     static void connectToDB() {
