@@ -102,6 +102,13 @@ class Bank_AccountTest {
             TestClient.transferMoney(conn, Client.getAccNumByCNIC(conn,SenderClient.getCNIC()), 100);
         }
 
+        @Test
+        void updateBalance_InvalidAccount() throws SQLException {
+            Bank_Account bank_accountTest = new Bank_Account();
+
+            bank_accountTest.updateBalance(conn);
+            assertNull(bank_accountTest.getBalance());
+        }
     }
 
     @Nested
