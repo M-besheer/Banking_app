@@ -56,6 +56,7 @@ public class TransferMoneyController {
         String receiverAcc = receiverAccountField.getText();
         String amountStr = amountField.getText();
 
+
         if (receiverAcc.isEmpty() || amountStr.isEmpty()) {
             showAlert(AlertType.ERROR, "Error", "Please fill all fields");
             return;
@@ -66,6 +67,10 @@ public class TransferMoneyController {
             return;
         }
 
+        if (Integer.parseInt(amountStr) <= 0) {
+            showAlert(AlertType.ERROR,"Error","Deposit amount must be positive.");
+            return;
+        }
         try (DB_handler db = new DB_handler()) {
             Connection conn = db.getConnection();
             int amount = Integer.parseInt(amountStr);
