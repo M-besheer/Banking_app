@@ -73,7 +73,6 @@ public class Signup2Controller {
             usererrorLabel.setText("Missing fields required!");
             usererrorLabel.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-background-radius: 5;");
             usererrorLabel.setVisible(true);
-            showError("Please enter all fields!");
             return;
         }
         if (strengthBar.getProgress() < 0.7) { // 70% strength threshold
@@ -81,7 +80,6 @@ public class Signup2Controller {
             usererrorLabel.setVisible(true);
             usererrorLabel.setText("Password too weak!");
             usererrorLabel.setStyle("-fx-text-fill: white; -fx-background-color: orange; -fx-background-radius: 5;");
-            showError("Password is too weak! Please choose a stronger password.");
             return;
         }
         if(pass2.isEmpty()){
@@ -89,7 +87,6 @@ public class Signup2Controller {
             usererrorLabel.setText("Please confirm your password!");
             usererrorLabel.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-background-radius: 5;");
             usererrorLabel.setVisible(true);
-            showError("missing confirmation password field!");
             return;
         }
 
@@ -106,7 +103,7 @@ public class Signup2Controller {
                 showError(getSignupError(result));
             }
         } catch (SQLException ex) {
-            showError("Database error: " + ex.getMessage());
+            System.out.println("Database error: " + ex.getMessage());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

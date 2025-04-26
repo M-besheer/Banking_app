@@ -132,5 +132,6 @@ public class UpdateAccountController {
     }
     private void showMessage(String message) {
         messageLabel.setText(message);
+        messageLabel.setVisible(true);
     }
 }
