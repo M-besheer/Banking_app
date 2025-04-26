@@ -11,6 +11,8 @@ class BankSystemIntegrationTest {
     private Manager testManager;
     private static Client testClient;
 
+
+
     @BeforeEach
     void setUp() throws SQLException {
         String url = "jdbc:mysql://localhost:3306/bank_schema";
@@ -110,37 +112,49 @@ class BankSystemIntegrationTest {
         Bank_Account acc500001 = Bank_Account.getByAccountNumber(conn, "500001");
         testManager.blockAccount(conn, acc500001);
 
-        Pair<Login_Account, Integer> loginResult = Login_Account.signIn(conn, "existing_user", "pass123");
+        Pair<Login_Account, Integer> loginResult = Login_Account.signIn(conn, "MBesheer", "Besheer");
         assertEquals(2, loginResult.getValue());
 
         int unblockResult = testManager.unblockAccount(conn, acc500001);
         assertEquals(1, unblockResult);
 
-        Pair<Login_Account, Integer> unblockLoginResult = Login_Account.signIn(conn, "existing_user", "pass123");
+        Pair<Login_Account, Integer> unblockLoginResult = Login_Account.signIn(conn, "Mbesheer", "Besheer");
         assertNotNull(unblockLoginResult.getKey());
         assertEquals(1, unblockLoginResult.getValue());
     }
 
     @AfterAll
     static void tearDown() throws SQLException {
-        // Clean bank_account
-        try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM bank_account WHERE client_id = ?")) {
-            pstmt.setString(1, testClient.getClientID());
-            pstmt.executeUpdate();
+        // 1) disable foreign key checks so we can delete in any order
+        try (Statement s = conn.createStatement()) {
+            s.execute("SET FOREIGN_KEY_CHECKS = 0");
         }
 
-        // Clean login_account
-        try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM login_account WHERE username = ?")) {
-            pstmt.setString(1, "new_user");
-            pstmt.executeUpdate();
+        // 2) delete any leftover rows from prior runs
+        //    - bank_account for clients using the test CNIC
+        try (PreparedStatement p = conn.prepareStatement(
+                "DELETE b FROM bank_account b JOIN client c ON b.client_id=c.client_id WHERE c.cnic=?")) {
+            p.setString(1, "12345");
+            p.executeUpdate();
+        }
+        //    - login_account for our test username
+        try (PreparedStatement p = conn.prepareStatement(
+                "DELETE FROM login_account WHERE username IN ('new_user')")) {
+            p.executeUpdate();
+        }
+        //    - client for our test CNIC
+        try (PreparedStatement p = conn.prepareStatement(
+                "DELETE FROM client WHERE cnic = ?")) {
+            p.setString(1, "12345");
+            p.executeUpdate();
         }
 
-        // Clean client
-        try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM client WHERE client_id = ?")) {
-            pstmt.setString(1, testClient.getClientID());
-            pstmt.executeUpdate();
+        // 4) re-enable foreign key checks
+        try (Statement s = conn.createStatement()) {
+            s.execute("SET FOREIGN_KEY_CHECKS = 1");
         }
 
         conn.close();
     }
+
 }
