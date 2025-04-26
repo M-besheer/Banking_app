@@ -24,7 +24,6 @@ public class Bank_Account {
 		this.opening_date = opening_date;
 	}
 
-
 	// Getters
 	public String getAccountNum() { return acc_num; }
 	public String getClientId() { return client_id; }
@@ -38,78 +37,79 @@ public class Bank_Account {
 	// Database operations
 	public static Bank_Account getByAccountNumber(Connection conn, String accountNum) throws SQLException {
 		String sql = "SELECT * FROM bank_account WHERE acc_num = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, accountNum);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				if (rs.next()) {
-					return new Bank_Account(
-							rs.getString("acc_num"),
-							rs.getString("client_id"),
-							rs.getString("login_id"),
-							rs.getString("type"),
-							rs.getString("balance"),
-							rs.getString("status"),
-							rs.getString("opening_date")
-					);
-				}
-			}
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		pstmt.setString(1, accountNum);
+		ResultSet rs = pstmt.executeQuery();
+		Bank_Account result = null;
+		if (rs.next()) {
+			result = new Bank_Account(
+					rs.getString("acc_num"),
+					rs.getString("client_id"),
+					rs.getString("login_id"),
+					rs.getString("type"),
+					rs.getString("balance"),
+					rs.getString("status"),
+					rs.getString("opening_date")
+			);
 		}
-		return null;
+		rs.close();
+		pstmt.close();
+		return result;
 	}
 
 	public static Bank_Account getByClientId(Connection conn, String clientId) throws SQLException {
 		String sql = "SELECT * FROM bank_account WHERE client_id = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, clientId);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				if (rs.next()) {
-					return new Bank_Account(
-							rs.getString("acc_num"),
-							rs.getString("client_id"),
-							rs.getString("login_id"),
-							rs.getString("type"),
-							rs.getString("balance"),
-							rs.getString("status"),
-							rs.getString("opening_date")
-
-					);
-				}
-			}
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		pstmt.setString(1, clientId);
+		ResultSet rs = pstmt.executeQuery();
+		Bank_Account result = null;
+		if (rs.next()) {
+			result = new Bank_Account(
+					rs.getString("acc_num"),
+					rs.getString("client_id"),
+					rs.getString("login_id"),
+					rs.getString("type"),
+					rs.getString("balance"),
+					rs.getString("status"),
+					rs.getString("opening_date")
+			);
 		}
-		return null;
+		rs.close();
+		pstmt.close();
+		return result;
 	}
 
 	public void updateBalance(Connection conn) throws SQLException {
 		String sql = "SELECT balance FROM bank_account WHERE acc_num = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, acc_num);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				if (rs.next()) {
-					balance = rs.getString("balance");
-				}
-			}
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		pstmt.setString(1, acc_num);
+		ResultSet rs = pstmt.executeQuery();
+		if (rs.next()) {
+			balance = rs.getString("balance");
 		}
+		rs.close();
+		pstmt.close();
 	}
 
 	public static Bank_Account getByLoginId(Connection conn, String loginId) throws SQLException {
 		String sql = "SELECT * FROM bank_account WHERE login_id = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, loginId);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				if (rs.next()) {
-					// Construct a Bank_Account object from the row
-					return new Bank_Account(
-							rs.getString("acc_num"),
-							rs.getString("client_id"),
-							rs.getString("login_id"),
-							rs.getString("type"),
-							rs.getString("balance"),
-							rs.getString("status"),
-							rs.getString("opening_date")
-					);
-				}
-			}
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		pstmt.setString(1, loginId);
+		ResultSet rs = pstmt.executeQuery();
+		Bank_Account result = null;
+		if (rs.next()) {
+			result = new Bank_Account(
+					rs.getString("acc_num"),
+					rs.getString("client_id"),
+					rs.getString("login_id"),
+					rs.getString("type"),
+					rs.getString("balance"),
+					rs.getString("status"),
+					rs.getString("opening_date")
+			);
 		}
-		return null;
+		rs.close();
+		pstmt.close();
+		return result;
 	}
 }
