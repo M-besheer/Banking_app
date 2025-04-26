@@ -71,9 +71,10 @@ public class UpdateAccountController {
     private void handleSearchButtonAction() {
         String AccNum= searchField.getText();
         if (AccNum.isEmpty()) {
-            showMessage("Please enter a Client ID to search");
+            showMessage("Please enter an Account number to search");
             messageLabel.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-font-weight: bold; -fx-font-size: 18;");
             clientIDLabel.setVisible(false);
+            clientDetailsPane.setVisible(false);
             return;
         }
         try(DB_handler db = new DB_handler()) {

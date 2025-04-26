@@ -68,7 +68,7 @@ public class TransferMoneyController {
         }
 
         if (Integer.parseInt(amountStr) <= 0) {
-            showAlert(AlertType.ERROR,"Error","Deposit amount must be positive.");
+            showAlert(AlertType.ERROR,"Error","Transfer amount must be positive.");
             return;
         }
         try (DB_handler db = new DB_handler()) {
