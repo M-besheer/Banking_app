@@ -40,6 +40,7 @@ class Bank_AccountTest {
         @Order(1)
         void getByValidClientId() throws SQLException {
             Bank_Account bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
+            assertNotNull(bank_accountTest);
 
             assertEquals(Bank_Account.getByClientId(conn, TestClient.getClientID()).getAccountNum(),
                     bank_accountTest.getAccountNum());
@@ -63,6 +64,7 @@ class Bank_AccountTest {
             Bank_Account bank_accountTest;
             bank_accountTest = Bank_Account.getByAccountNumber
                     (conn, Bank_Account.getByClientId(conn, TestClient.getClientID()).getAccountNum());
+            assertNotNull(bank_accountTest);
 
             assertEquals(Bank_Account.getByClientId(conn, TestClient.getClientID()).getAccountNum(),
                     bank_accountTest.getAccountNum());
@@ -90,7 +92,9 @@ class Bank_AccountTest {
         @Order(2) //Must run after we have successfully tested getByClientId function
         void updateBalance() throws SQLException {
             Bank_Account bank_accountTest = Bank_Account.getByClientId(conn, TestClient.getClientID());
+            assertNotNull(bank_accountTest);
             Client SenderClient = Client.getById(conn, "10000");
+            assertNotNull(SenderClient);
 
             assertEquals("0", bank_accountTest.getBalance());
             SenderClient.transferMoney(conn, bank_accountTest.getAccountNum(), 100);
