@@ -31,7 +31,7 @@ To run the banking app with full functionality (including database operations), 
 - Run the Main.java file or the main class of your application (BM_System)
 
 ### if by any chance you faced this error ⬇️ :
-  <img width="494" alt="image" src="https://github.com/user-attachments/assets/ac7f4722-56b6-43b1-9884-f03b806e6b72" />
+   - <img width="494" alt="image" src="https://github.com/user-attachments/assets/ac7f4722-56b6-43b1-9884-f03b806e6b72" />
    - follow this yt tutorial video to resolve this error --> (https://www.youtube.com/watch?v=84IOtc05TuA&pp=ygUheGFtcHAgbXlzcWwgc2h1dGRvd24gdW5leHBlY3RlZGx5)
      
 ## 🖼️ GUI Preview
